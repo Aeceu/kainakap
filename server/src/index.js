@@ -7,6 +7,7 @@ const connection = require("./utils/dbConnect");
 
 // IMPORTED ROUTES
 const userRoute = require("./routes/userRoutes");
+const fileRoute = require("./routes/fileRoutes");
 
 // CONFIGURATIONS
 dotenv.config();
@@ -27,7 +28,8 @@ app.use(
 );
 
 // API ROUTES
-app.use("/api/v1/user", userRoute);
+app.use("/api/v1", userRoute);
+app.use("/api/v1", fileRoute);
 
 // DATABASE AND SERVER CONNECTIONS
 connection.connect((err) => {

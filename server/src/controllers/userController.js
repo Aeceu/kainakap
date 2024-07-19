@@ -429,7 +429,10 @@ const getUsersColumn = async (req, res) => {
     // Fetch emergency_person data
     const [emergencyPersonResult] = await connection
       .promise()
-      .query("SELECT * FROM emergency_person WHERE userId = ?", [userId]);
+      .query(
+        "ALTER TABLE user ADD COLUMN valid_id_no varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL",
+        [userId]
+      );
     if (emergencyPersonResult.length > 0) {
       data.emergency_person = emergencyPersonResult[0];
     } else {
@@ -445,34 +448,8 @@ const getUsersColumn = async (req, res) => {
 };
 
 const getUsers = async (req, res) => {
-  const createEmergencyPersonTableSQL = `
-  CREATE TABLE IF NOT EXISTS \`emergency_person\` (
-    \`id\` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
-    \`firstName\` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
-    \`middleName\` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
-    \`lastName\` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
-    \`suffix\` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-    \`age\` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
-    \`gender\` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
-    \`relationship\` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
-    \`religion\` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
-    \`email\` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
-    \`phone\` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
-    \`landline\` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
-    \`houseno\` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
-    \`street\` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
-    \`baranggay\` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
-    \`city\` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-    \`province\` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-    \`region\` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
-    \`zipcode\` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
-    \`userId\` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL UNIQUE,
-    PRIMARY KEY (\`id\`),
-    FOREIGN KEY (\`userId\`) REFERENCES \`user\`(\`id\`) ON DELETE CASCADE
-  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-`;
   try {
-    connection.query("SELECT * FROM user", (err, result) => {
+    connection.query("describe user_files", (err, result) => {
       if (err) {
         console.log(err);
         res.status(403).json(err);

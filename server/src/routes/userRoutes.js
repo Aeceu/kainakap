@@ -10,13 +10,13 @@ const {
 
 const router = express.Router();
 
-router.post("/login", login);
-router.post("/signup", signup);
-router.get("/logout", logout);
-router.get("/refresh", handleRefreshToken);
+router.post("/user/login", login);
+router.post("/user/signup", signup);
+router.get("/user/logout", logout);
+router.get("/user/refresh", handleRefreshToken);
 
-router.get("/", getUsers);
-router.post("/signup", signup);
-router.get("/:userId", getUsersColumn);
+router.get("/user/", getUsers);
+router.post("/user/signup", signup);
+router.get("/user/:userId", getUsersColumn);
 
 module.exports = router;
