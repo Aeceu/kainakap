@@ -1,4 +1,4 @@
-export const extractDriversLicenseData = (text) => {
+const extractDriversLicenseData = (text) => {
   if (!text) return null;
   const idMatch = text.match(/\b[A-Z0-9]\d{2}-\d{2}-\d{6}\b/);
   const nameMatch = text.match(
@@ -15,7 +15,7 @@ export const extractDriversLicenseData = (text) => {
   return null;
 };
 
-export const extractPhilHealthData = (text) => {
+const extractPhilHealthData = (text) => {
   if (!text) return null;
   const idMatch = text.match(/\b\d{2}-\d{9}-\d{1}\b/);
   const nameMatch = text.match(/[A-Z]+, [A-Z ]+/);
@@ -30,7 +30,7 @@ export const extractPhilHealthData = (text) => {
   return null;
 };
 
-export const extractNationalIDData = (text) => {
+const extractNationalIDData = (text) => {
   if (!text) return null;
   const idMatch = text.match(/\b\d{4}-\d{4}-\d{4}-\d{4}\b/);
   const nameMatch = text.match(
@@ -47,3 +47,5 @@ export const extractNationalIDData = (text) => {
   }
   return null;
 };
+
+module.exports = { extractDriversLicenseData, extractNationalIDData, extractPhilHealthData };

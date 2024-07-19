@@ -7,6 +7,9 @@ const transporter = require("../utils/transporter");
 const GenerateQRCode = require("../utils/generateQRCode");
 const calculateExpirationDate = require("../utils/calculateExpDate");
 
+const getUserByEmailQuery = require("../queries/getUserByEmail");
+const getUserByIdQuery = require("../queries/getUserById");
+
 const signup = async (req, res) => {
   const { newUser } = req.body;
 
@@ -25,7 +28,7 @@ const signup = async (req, res) => {
     const newID = uuid();
 
     // Insert new user
-    const [userResult] = await connection.promise().query(
+    await connection.promise().query(
       `INSERT INTO \`user\` (
           \`id\`, 
           \`firstName\`, 
@@ -200,7 +203,6 @@ const signup = async (req, res) => {
       newID,
     ]);
 
-    console.log("New user created:", userResult);
     res.status(200).json({ message: "New user created!" });
   } catch (error) {
     console.log(error);
@@ -245,9 +247,9 @@ const login = async (req, res) => {
         \`userId\`, 
         \`otpCode\`, 
         \`createdAt\`, 
-        \`updatedAt\`, 
+        \`expiredAt\`
         ) VALUES (?, ?, ?, ?, ?)`,
-      [uuid(), userExists[0].id, hashOTP, new Date().toISOString(), calculateExpirationDate()]
+      [uuid(), userExists[0].id, hashOTP, new Date(), calculateExpirationDate()]
     );
 
     await transporter.sendMail(mailOption);
@@ -296,13 +298,85 @@ const verifyOTP = async (req, res) => {
     }
 
     // Fetch user data
-    const [users] = await connection
-      .promise()
-      .query("SELECT * FROM `user` WHERE `id` = ?", [userId]);
-
+    const [users] = await connection.promise().query(getUserByIdQuery, [userId]);
     if (users.length === 0) return res.status(403).json("User does not exist!");
-
     const user = users[0];
+    const result = {
+      user: {
+        id: result.userID,
+        firstName: result.userFirstName,
+        middleName: result.userMiddleName,
+        lastName: result.userLastName,
+        suffix: result.userSuffix,
+        age: result.userAge,
+        birthdate: result.userBirthdate,
+        birthplace: result.userBirthplace,
+        gender: result.userGender,
+        religion: result.userReligion,
+        citizenship: result.userCitizenship,
+        civil: result.userCivil,
+        email: result.userEmail,
+        phone: result.userPhone,
+        landline: result.userLandline,
+        houseno: result.userHouseno,
+        street: result.userStreet,
+        baranggay: result.userBaranggay,
+        city: result.userCity,
+        province: result.userProvince,
+        region: result.userRegion,
+        zipcode: result.userZipcode,
+        elementary: result.userElementary,
+        attain: result.userAttain,
+        highschool: result.userHighschool,
+        attain1: result.userAttain1,
+        senior: result.userSenior,
+        attain2: result.userAttain2,
+        college: result.userCollege,
+        attain3: result.userAttain3,
+        employment: result.userEmployment,
+        occupation: result.userOccupation,
+        yearEmploy: result.userYearEmploy,
+        skill1: result.userSkill1,
+        skill2: result.userSkill2,
+        yearUnemploy: result.userYearUnemploy,
+        skill1_1: result.userSkill1_1,
+        skill2_1: result.userSkill2_1,
+        blood: result.userBlood,
+        height: result.userHeight,
+        weight: result.userWeight,
+        disability: result.userDisability,
+        visibility: result.userVisibility,
+        made_disabled: result.userMadeDisabled,
+        status: result.userStatus,
+        device: result.userDevice,
+        specificDevice: result.userSpecificDevice,
+        medicine: result.userMedicine,
+        specificMedicine: result.userSpecificMedicine,
+        others: result.userOthers,
+        role: result.userRole,
+        qr_code: result.userQRCode,
+        emergency_person: {
+          firstName: result.emergencyPersonFirstName,
+          middleName: result.emergencyPersonMiddleName,
+          lastName: result.emergencyPersonLastName,
+          suffix: result.emergencyPersonSuffix,
+          age: result.emergencyPersonAge,
+          gender: result.emergencyPersonGender,
+          relationship: result.emergencyPersonRelationship,
+          religion: result.emergencyPersonReligion,
+          email: result.emergencyPersonEmail,
+          phone: result.emergencyPersonPhone,
+          landline: result.emergencyPersonLandline,
+          houseno: result.emergencyPersonHouseno,
+          street: result.emergencyPersonStreet,
+          baranggay: result.emergencyPersonBaranggay,
+          city: result.emergencyPersonCity,
+          province: result.emergencyPersonProvince,
+          region: result.emergencyPersonRegion,
+          zipcode: result.emergencyPersonZipcode,
+        },
+      },
+    };
 
     // Delete OTP record
     await connection.promise().query("DELETE FROM `otp` WHERE `userId` = ?", [userId]);
@@ -335,7 +409,7 @@ const verifyOTP = async (req, res) => {
     });
 
     // Exclude sensitive data from user
-    const userWithoutPass = { ...user };
+    const userWithoutPass = { ...result };
     delete userWithoutPass.password;
     delete userWithoutPass.refreshToken;
 
@@ -359,16 +433,93 @@ const handleRefreshToken = async (req, res) => {
   if (!cookies?.jwt) return res.sendStatus(401);
 
   const refreshToken = cookies.jwt;
-  const foundUser = await connection
+  const [foundUser] = await connection
     .promise()
     .query("SELECT * from `user` WHERE `refreshToken` = ?", [refreshToken]);
-
   if (foundUser.length <= 0) return res.sendStatus(403);
 
-  jwt.verify(refreshToken, process.env.TOKEN_SECRET, (err, decoded) => {
-    if (err || foundUser?.email !== decoded.email) {
+  jwt.verify(refreshToken, process.env.TOKEN_SECRET, async (err, decoded) => {
+    if (err || foundUser[0].email !== decoded.email) {
       return res.sendStatus(403);
     }
+    const [rows] = await connection.promise().query(getUserByIdQuery, [decoded.id]);
+    const user = rows[0];
+
+    const result = {
+      id: user.userID,
+      firstName: user.userFirstName,
+      middleName: user.userMiddleName,
+      lastName: user.userLastName,
+      suffix: user.userSuffix,
+      age: user.userAge,
+      birthdate: user.userBirthdate,
+      birthplace: user.userBirthplace,
+      gender: user.userGender,
+      religion: user.userReligion,
+      citizenship: user.userCitizenship,
+      civil: user.userCivil,
+      email: user.userEmail,
+      phone: user.userPhone,
+      landline: user.userLandline,
+      houseno: user.userHouseno,
+      street: user.userStreet,
+      baranggay: user.userBaranggay,
+      city: user.userCity,
+      province: user.userProvince,
+      region: user.userRegion,
+      zipcode: user.userZipcode,
+      elementary: user.userElementary,
+      attain: user.userAttain,
+      highschool: user.userHighschool,
+      attain1: user.userAttain1,
+      senior: user.userSenior,
+      attain2: user.userAttain2,
+      college: user.userCollege,
+      attain3: user.userAttain3,
+      employment: user.userEmployment,
+      occupation: user.userOccupation,
+      yearEmploy: user.userYearEmploy,
+      skill1: user.userSkill1,
+      skill2: user.userSkill2,
+      yearUnemploy: user.userYearUnemploy,
+      skill1_1: user.userSkill1_1,
+      skill2_1: user.userSkill2_1,
+      blood: user.userBlood,
+      height: user.userHeight,
+      weight: user.userWeight,
+      disability: user.userDisability,
+      visibility: user.userVisibility,
+      made_disabled: user.userMadeDisabled,
+      status: user.userStatus,
+      device: user.userDevice,
+      specificDevice: user.userSpecificDevice,
+      medicine: user.userMedicine,
+      specificMedicine: user.userSpecificMedicine,
+      others: user.userOthers,
+      role: user.userRole,
+      qr_code: user.userQRCode,
+      emergencyPerson: {
+        firstName: user.emergencyPersonFirstName,
+        middleName: user.emergencyPersonMiddleName,
+        lastName: user.emergencyPersonLastName,
+        suffix: user.emergencyPersonSuffix,
+        age: user.emergencyPersonAge,
+        gender: user.emergencyPersonGender,
+        relationship: user.emergencyPersonRelationship,
+        religion: user.emergencyPersonReligion,
+        email: user.emergencyPersonEmail,
+        phone: user.emergencyPersonPhone,
+        landline: user.emergencyPersonLandline,
+        houseno: user.emergencyPersonHouseno,
+        street: user.emergencyPersonStreet,
+        baranggay: user.emergencyPersonBaranggay,
+        city: user.emergencyPersonCity,
+        province: user.emergencyPersonProvince,
+        region: user.emergencyPersonRegion,
+        zipcode: user.emergencyPersonZipcode,
+      },
+    };
+
     const accessToken = jwt.sign(
       {
         user_data: {
@@ -382,10 +533,7 @@ const handleRefreshToken = async (req, res) => {
         expiresIn: "10s",
       }
     );
-
-    delete foundUser[0].password;
-    delete foundUser[0].refreshToken;
-    res.json({ user: userWithoutPass, accessToken });
+    res.json({ user: result, accessToken });
   });
 };
 
@@ -413,34 +561,9 @@ const logout = async (req, res) => {
 };
 
 const getUsersColumn = async (req, res) => {
-  const userId = req.params.userId;
-  let data = {};
   try {
-    // Fetch user data
-    const [userResult] = await connection
-      .promise()
-      .query("SELECT * FROM user WHERE id = ?", [userId]);
-    if (userResult.length > 0) {
-      data = userResult[0];
-    } else {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    // Fetch emergency_person data
-    const [emergencyPersonResult] = await connection
-      .promise()
-      .query(
-        "ALTER TABLE user ADD COLUMN valid_id_no varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL",
-        [userId]
-      );
-    if (emergencyPersonResult.length > 0) {
-      data.emergency_person = emergencyPersonResult[0];
-    } else {
-      return res.status(404).json({ message: "Emergency contact not found" });
-    }
-
-    // Respond with combined data
-    res.status(200).json(data);
+    const [userExists] = await connection.promise().query("DESCRIBE otp");
+    res.status(200).json(userExists);
   } catch (error) {
     console.log(error);
     res.status(500).json(error);
@@ -449,7 +572,7 @@ const getUsersColumn = async (req, res) => {
 
 const getUsers = async (req, res) => {
   try {
-    connection.query("describe user_files", (err, result) => {
+    connection.query("SELECT * FROM user", (err, result) => {
       if (err) {
         console.log(err);
         res.status(403).json(err);
@@ -463,4 +586,129 @@ const getUsers = async (req, res) => {
   }
 };
 
-module.exports = { signup, getUsers, getUsersColumn, login, verifyOTP, handleRefreshToken, logout };
+const getUserByID = async (req, res) => {
+  const userId = req.params.userId;
+
+  try {
+    const [rows] = await connection.promise().query(getUserByIdQuery, [userId]);
+    const user = rows[0];
+
+    const result = {
+      id: user.userID,
+      firstName: user.userFirstName,
+      middleName: user.userMiddleName,
+      lastName: user.userLastName,
+      suffix: user.userSuffix,
+      age: user.userAge,
+      birthdate: user.userBirthdate,
+      birthplace: user.userBirthplace,
+      gender: user.userGender,
+      religion: user.userReligion,
+      citizenship: user.userCitizenship,
+      civil: user.userCivil,
+      email: user.userEmail,
+      phone: user.userPhone,
+      landline: user.userLandline,
+      houseno: user.userHouseno,
+      street: user.userStreet,
+      baranggay: user.userBaranggay,
+      city: user.userCity,
+      province: user.userProvince,
+      region: user.userRegion,
+      zipcode: user.userZipcode,
+      elementary: user.userElementary,
+      attain: user.userAttain,
+      highschool: user.userHighschool,
+      attain1: user.userAttain1,
+      senior: user.userSenior,
+      attain2: user.userAttain2,
+      college: user.userCollege,
+      attain3: user.userAttain3,
+      employment: user.userEmployment,
+      occupation: user.userOccupation,
+      yearEmploy: user.userYearEmploy,
+      skill1: user.userSkill1,
+      skill2: user.userSkill2,
+      yearUnemploy: user.userYearUnemploy,
+      skill1_1: user.userSkill1_1,
+      skill2_1: user.userSkill2_1,
+      blood: user.userBlood,
+      height: user.userHeight,
+      weight: user.userWeight,
+      disability: user.userDisability,
+      visibility: user.userVisibility,
+      made_disabled: user.userMadeDisabled,
+      status: user.userStatus,
+      device: user.userDevice,
+      specificDevice: user.userSpecificDevice,
+      medicine: user.userMedicine,
+      specificMedicine: user.userSpecificMedicine,
+      others: user.userOthers,
+      role: user.userRole,
+      qr_code: user.userQRCode,
+      emergencyPerson: {
+        firstName: user.emergencyPersonFirstName,
+        middleName: user.emergencyPersonMiddleName,
+        lastName: user.emergencyPersonLastName,
+        suffix: user.emergencyPersonSuffix,
+        age: user.emergencyPersonAge,
+        gender: user.emergencyPersonGender,
+        relationship: user.emergencyPersonRelationship,
+        religion: user.emergencyPersonReligion,
+        email: user.emergencyPersonEmail,
+        phone: user.emergencyPersonPhone,
+        landline: user.emergencyPersonLandline,
+        houseno: user.emergencyPersonHouseno,
+        street: user.emergencyPersonStreet,
+        baranggay: user.emergencyPersonBaranggay,
+        city: user.emergencyPersonCity,
+        province: user.emergencyPersonProvince,
+        region: user.emergencyPersonRegion,
+        zipcode: user.emergencyPersonZipcode,
+      },
+    };
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+};
+
+const deleteUserByID = async (req, res) => {
+  const userId = req.params.userId;
+  try {
+    const [userResult] = await connection
+      .promise()
+      .query("SELECT qr_code FROM user WHERE id = ?", [userId]);
+
+    if (userResult.length === 0) {
+      res.status(404).json("User not found");
+      return;
+    }
+    const [deleteResult] = await connection
+      .promise()
+      .query("DELETE FROM user WHERE id = ?", [userId]);
+
+    if (deleteResult.affectedRows === 0) {
+      res.status(404).json("User not found");
+      return;
+    }
+    const imageId = userResult[0].qr_code.image_id;
+    await cloudinary.uploader.destroy(imageId);
+    res.status(200).json("User deleted successfully!");
+  } catch (error) {
+    console.log(error);
+    res.status(500).json(error);
+  }
+};
+
+module.exports = {
+  signup,
+  getUsers,
+  getUsersColumn,
+  login,
+  verifyOTP,
+  handleRefreshToken,
+  logout,
+  getUserByID,
+  deleteUserByID,
+};
