@@ -2,6 +2,8 @@ SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
 
+-- Ganto itsura ng table natin 
+
 -- Create tables based on Prisma schema
 
 CREATE TABLE IF NOT EXISTS `admin` (
@@ -77,20 +79,6 @@ CREATE TABLE IF NOT EXISTS `user` (
   `role` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'user',
   `status` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'pending',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-CREATE TABLE IF NOT EXISTS `user_files` (
-  `id` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `userId` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `profile_photo` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `resume` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `pwd_id` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `brgy_residence_certificate` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `medical_certificate` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `proof_of_disability` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `valid_id` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  FOREIGN KEY (`userId`) REFERENCES `user`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `emergency_person` (

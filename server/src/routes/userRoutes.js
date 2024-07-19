@@ -1,10 +1,22 @@
 const express = require("express");
-const { getUsers, signup, getUsersColumn } = require("../controllers/userController");
+const {
+  getUsers,
+  signup,
+  getUsersColumn,
+  login,
+  logout,
+  handleRefreshToken,
+} = require("../controllers/userController");
 
 const router = express.Router();
 
-router.get("/user", getUsers);
+router.post("/login", login);
 router.post("/signup", signup);
-router.get("/user/column", getUsersColumn);
+router.get("/logout", logout);
+router.get("/refresh", handleRefreshToken);
+
+router.get("/", getUsers);
+router.post("/signup", signup);
+router.get("/:userId", getUsersColumn);
 
 module.exports = router;

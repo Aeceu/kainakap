@@ -12,14 +12,22 @@ const userRoute = require("./routes/userRoutes");
 dotenv.config();
 const app = express();
 
+// TRUSTERED ORIGINS
+const localClientUrl = "http://localhost:5173";
+
 // MIDDLEWARES
 app.use(bodyParser.json({ limit: "50mb" }));
 app.use(cookieParser());
 app.use(express.json());
-app.use(cors());
+app.use(
+  cors({
+    origin: localClientUrl,
+    credentials: true,
+  })
+);
 
 // API ROUTES
-app.use("/api/v1", userRoute);
+app.use("/api/v1/user", userRoute);
 
 // DATABASE AND SERVER CONNECTIONS
 connection.connect((err) => {
