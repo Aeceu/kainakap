@@ -35,7 +35,6 @@ const Medical = ({ setCurrentStep }) => {
   });
 
   const onSubmit = (data) => {
-    console.log(state.newUser);
     setNewUser({ ...newUser, ...data });
     toast.success("Medical Information done!");
     setCurrentStep((prev) => prev + 1);

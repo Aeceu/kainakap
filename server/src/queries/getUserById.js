@@ -70,13 +70,126 @@ const getUserByIdQuery = `
       ep.city AS emergencyPersonCity,
       ep.province AS emergencyPersonProvince,
       ep.region AS emergencyPersonRegion,
-      ep.zipcode AS emergencyPersonZipcode
+      ep.zipcode AS emergencyPersonZipcode,
+      uf.profile_photo_id AS profilePhotoId,
+      uf.profile_photo_url AS profilePhotoUrl,
+      uf.resume_id AS resumeId,
+      uf.resume_url AS resumeUrl,
+      uf.pwd_id_id AS pwdIdId,
+      uf.pwd_id_url AS pwdIdUrl,
+      uf.brgy_residence_certificate_id AS brgyResidenceCertificateId,
+      uf.brgy_residence_certificate_url AS brgyResidenceCertificateUrl,
+      uf.medical_certificate_id AS medicalCertificateId,
+      uf.medical_certificate_url AS medicalCertificateUrl,
+      uf.proof_of_disability_id AS proofOfDisabilityId,
+      uf.proof_of_disability_url AS proofOfDisabilityUrl,
+      uf.valid_id_id AS validIdId,
+      uf.valid_id_no AS validIdNo,
+      uf.valid_id_url AS validIdUrl
     FROM 
       user u
     LEFT JOIN 
       emergency_person ep ON u.id = ep.userId
+    LEFT JOIN 
+      user_files uf ON u.id = uf.userId
     WHERE 
       u.id = ?;
   `;
 
-module.exports = getUserByIdQuery;
+const getUsersQuery = `
+    SELECT 
+      u.id AS userID,
+      u.firstName AS userFirstName,
+      u.middleName AS userMiddleName,
+      u.lastName AS userLastName,
+      u.suffix AS userSuffix,
+      u.age AS userAge,
+      u.birthdate AS userBirthdate,
+      u.birthplace AS userBirthplace,
+      u.gender AS userGender,
+      u.religion AS userReligion,
+      u.citizenship AS userCitizenship,
+      u.civil AS userCivil,
+      u.email AS userEmail,
+      u.phone AS userPhone,
+      u.landline AS userLandline,
+      u.houseno AS userHouseno,
+      u.street AS userStreet,
+      u.baranggay AS userBaranggay,
+      u.city AS userCity,
+      u.province AS userProvince,
+      u.region AS userRegion,
+      u.zipcode AS userZipcode,
+      u.elementary AS userElementary,
+      u.attain AS userAttain,
+      u.highschool AS userHighschool,
+      u.attain1 AS userAttain1,
+      u.senior AS userSenior,
+      u.attain2 AS userAttain2,
+      u.college AS userCollege,
+      u.attain3 AS userAttain3,
+      u.employment AS userEmployment,
+      u.occupation AS userOccupation,
+      u.yearEmploy AS userYearEmploy,
+      u.skill1 AS userSkill1,
+      u.skill2 AS userSkill2,
+      u.yearUnemploy AS userYearUnemploy,
+      u.skill1_1 AS userSkill1_1,
+      u.skill2_1 AS userSkill2_1,
+      u.blood AS userBlood,
+      u.height AS userHeight,
+      u.weight AS userWeight,
+      u.disability AS userDisability,
+      u.visibility AS userVisibility,
+      u.made_disabled AS userMadeDisabled,
+      u.status AS userStatus,
+      u.device AS userDevice,
+      u.specificDevice AS userSpecificDevice,
+      u.medicine AS userMedicine,
+      u.specificMedicine AS userSpecificMedicine,
+      u.others AS userOthers,
+      u.password AS userPassword,
+      u.role AS userRole,
+      u.qr_code AS userQRCode,
+      ep.firstName AS emergencyPersonFirstName,
+      ep.middleName AS emergencyPersonMiddleName,
+      ep.lastName AS emergencyPersonLastName,
+      ep.suffix AS emergencyPersonSuffix,
+      ep.age AS emergencyPersonAge,
+      ep.gender AS emergencyPersonGender,
+      ep.relationship AS emergencyPersonRelationship,
+      ep.religion AS emergencyPersonReligion,
+      ep.email AS emergencyPersonEmail,
+      ep.phone AS emergencyPersonPhone,
+      ep.landline AS emergencyPersonLandline,
+      ep.houseno AS emergencyPersonHouseno,
+      ep.street AS emergencyPersonStreet,
+      ep.baranggay AS emergencyPersonBaranggay,
+      ep.city AS emergencyPersonCity,
+      ep.province AS emergencyPersonProvince,
+      ep.region AS emergencyPersonRegion,
+      ep.zipcode AS emergencyPersonZipcode,
+      uf.profile_photo_id AS profilePhotoId,
+      uf.profile_photo_url AS profilePhotoUrl,
+      uf.resume_id AS resumeId,
+      uf.resume_url AS resumeUrl,
+      uf.pwd_id_id AS pwdIdId,
+      uf.pwd_id_url AS pwdIdUrl,
+      uf.brgy_residence_certificate_id AS brgyResidenceCertificateId,
+      uf.brgy_residence_certificate_url AS brgyResidenceCertificateUrl,
+      uf.medical_certificate_id AS medicalCertificateId,
+      uf.medical_certificate_url AS medicalCertificateUrl,
+      uf.proof_of_disability_id AS proofOfDisabilityId,
+      uf.proof_of_disability_url AS proofOfDisabilityUrl,
+      uf.valid_id_id AS validIdId,
+      uf.valid_id_no AS validIdNo,
+      uf.valid_id_url AS validIdUrl
+    FROM 
+      user u
+    LEFT JOIN 
+      emergency_person ep ON u.id = ep.userId
+    LEFT JOIN 
+      user_files uf ON u.id = uf.userId
+  `;
+
+module.exports = { getUserByIdQuery, getUsersQuery };

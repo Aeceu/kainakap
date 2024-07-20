@@ -7,18 +7,12 @@ const transporter = require("../utils/transporter");
 const GenerateQRCode = require("../utils/generateQRCode");
 const calculateExpirationDate = require("../utils/calculateExpDate");
 
-const getUserByIdQuery = require("../queries/getUserById");
+const { getUserByIdQuery, getUsersQuery } = require("../queries/getUserById");
 
 const signup = async (req, res) => {
-  const { newUser, file } = req.body;
+  const { newUser, files, idData } = req.body;
 
   try {
-    if (!file) {
-      return res.status(403).json({
-        message: "Please include your valid ID!",
-      });
-    }
-
     // Check if user already exists
     const [userExists] = await connection
       .promise()
@@ -47,6 +41,72 @@ const signup = async (req, res) => {
 
     const hashPass = await bcrypt.hash(newUser.password, 12);
     const newID = uuid();
+
+    // Upload files to Cloudinary and get URLs
+    const uploadPromises = Object.keys(files).map(async (key) => {
+      if (files[key]) {
+        const result = await cloudinary.uploader.upload(files[key], {
+          folder: `kainakap/user_files/${newUser.lastName}`,
+        });
+        return { key, public_id: result.public_id, secure_url: result.secure_url };
+      }
+    });
+
+    const uploadResults = await Promise.all(uploadPromises);
+
+    // Prepare data for insertion
+    const fileData = {
+      profile_photo_id: "",
+      profile_photo_url: "",
+      resume_id: "",
+      resume_url: "",
+      pwd_id_id: "",
+      pwd_id_url: "",
+      brgy_residence_certificate_id: "",
+      brgy_residence_certificate_url: "",
+      medical_certificate_id: "",
+      medical_certificate_url: "",
+      proof_of_disability_id: "",
+      proof_of_disability_url: "",
+      valid_id_no: idData.idNumber,
+      valid_id_id: "",
+      valid_id_url: "",
+    };
+
+    uploadResults.forEach((item) => {
+      switch (item.key) {
+        case "profilePhoto":
+          fileData.profile_photo_id = item.public_id;
+          fileData.profile_photo_url = item.secure_url;
+          break;
+        case "resume":
+          fileData.resume_id = item.public_id;
+          fileData.resume_url = item.secure_url;
+          break;
+        case "pwd_id":
+          fileData.pwd_id_id = item.public_id;
+          fileData.pwd_id_url = item.secure_url;
+          break;
+        case "baranggay_residence_certificate":
+          fileData.brgy_residence_certificate_id = item.public_id;
+          fileData.brgy_residence_certificate_url = item.secure_url;
+          break;
+        case "medical_certificate":
+          fileData.medical_certificate_id = item.public_id;
+          fileData.medical_certificate_url = item.secure_url;
+          break;
+        case "proof_of_disability":
+          fileData.proof_of_disability_id = item.public_id;
+          fileData.proof_of_disability_url = item.secure_url;
+          break;
+        case "valid_id":
+          fileData.valid_id_id = item.public_id;
+          fileData.valid_id_url = item.secure_url;
+          break;
+        default:
+          break;
+      }
+    });
 
     // Insert new user
     await connection.promise().query(
@@ -186,25 +246,67 @@ const signup = async (req, res) => {
         ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
       [
         uuid(),
-        newUser.emergency_person.firstName,
-        newUser.emergency_person.middleName,
-        newUser.emergency_person.lastName,
-        newUser.emergency_person.suffix,
-        newUser.emergency_person.age,
-        newUser.emergency_person.gender,
-        newUser.emergency_person.relationship,
-        newUser.emergency_person.religion,
-        newUser.emergency_person.email,
-        newUser.emergency_person.phone,
-        newUser.emergency_person.landline,
-        newUser.emergency_person.houseno,
-        newUser.emergency_person.street,
-        newUser.emergency_person.baranggay,
-        newUser.emergency_person.city,
-        newUser.emergency_person.province,
-        newUser.emergency_person.region,
-        newUser.emergency_person.zipcode,
+        newUser.emergencyPerson.firstName,
+        newUser.emergencyPerson.middleName,
+        newUser.emergencyPerson.lastName,
+        newUser.emergencyPerson.suffix,
+        newUser.emergencyPerson.age,
+        newUser.emergencyPerson.gender,
+        newUser.emergencyPerson.relationship,
+        newUser.emergencyPerson.religion,
+        newUser.emergencyPerson.email,
+        newUser.emergencyPerson.phone,
+        newUser.emergencyPerson.landline,
+        newUser.emergencyPerson.houseno,
+        newUser.emergencyPerson.street,
+        newUser.emergencyPerson.baranggay,
+        newUser.emergencyPerson.city,
+        newUser.emergencyPerson.province,
+        newUser.emergencyPerson.region,
+        newUser.emergencyPerson.zipcode,
         newID,
+      ]
+    );
+
+    // Inset user_files of user
+    await connection.promise().query(
+      `INSERT INTO \`user_files\` (
+          \`id\`, 
+          \`userId\`,
+          \`profile_photo_id\`,
+          \`profile_photo_url\`,
+          \`resume_id\`,
+          \`resume_url\`,
+          \`pwd_id_id\`,
+          \`pwd_id_url\`,
+          \`brgy_residence_certificate_id\`,
+          \`brgy_residence_certificate_url\`,
+          \`medical_certificate_id\`,
+          \`medical_certificate_url\`,
+          \`proof_of_disability_id\`,
+          \`proof_of_disability_url\`,
+          \`valid_id_no\`,
+          \`valid_id_id\`,
+          \`valid_id_url\`
+        ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+      [
+        uuid(),
+        newID,
+        fileData.profile_photo_id,
+        fileData.profile_photo_url,
+        fileData.resume_id,
+        fileData.resume_url,
+        fileData.pwd_id_id,
+        fileData.pwd_id_url,
+        fileData.brgy_residence_certificate_id,
+        fileData.brgy_residence_certificate_url,
+        fileData.medical_certificate_id,
+        fileData.medical_certificate_url,
+        fileData.proof_of_disability_id,
+        fileData.proof_of_disability_url,
+        fileData.valid_id_no,
+        fileData.valid_id_id,
+        fileData.valid_id_url,
       ]
     );
 
@@ -323,79 +425,94 @@ const verifyOTP = async (req, res) => {
     if (users.length === 0) return res.status(403).json("User does not exist!");
     const user = users[0];
     const result = {
-      user: {
-        id: result.userID,
-        firstName: result.userFirstName,
-        middleName: result.userMiddleName,
-        lastName: result.userLastName,
-        suffix: result.userSuffix,
-        age: result.userAge,
-        birthdate: result.userBirthdate,
-        birthplace: result.userBirthplace,
-        gender: result.userGender,
-        religion: result.userReligion,
-        citizenship: result.userCitizenship,
-        civil: result.userCivil,
-        email: result.userEmail,
-        phone: result.userPhone,
-        landline: result.userLandline,
-        houseno: result.userHouseno,
-        street: result.userStreet,
-        baranggay: result.userBaranggay,
-        city: result.userCity,
-        province: result.userProvince,
-        region: result.userRegion,
-        zipcode: result.userZipcode,
-        elementary: result.userElementary,
-        attain: result.userAttain,
-        highschool: result.userHighschool,
-        attain1: result.userAttain1,
-        senior: result.userSenior,
-        attain2: result.userAttain2,
-        college: result.userCollege,
-        attain3: result.userAttain3,
-        employment: result.userEmployment,
-        occupation: result.userOccupation,
-        yearEmploy: result.userYearEmploy,
-        skill1: result.userSkill1,
-        skill2: result.userSkill2,
-        yearUnemploy: result.userYearUnemploy,
-        skill1_1: result.userSkill1_1,
-        skill2_1: result.userSkill2_1,
-        blood: result.userBlood,
-        height: result.userHeight,
-        weight: result.userWeight,
-        disability: result.userDisability,
-        visibility: result.userVisibility,
-        made_disabled: result.userMadeDisabled,
-        status: result.userStatus,
-        device: result.userDevice,
-        specificDevice: result.userSpecificDevice,
-        medicine: result.userMedicine,
-        specificMedicine: result.userSpecificMedicine,
-        others: result.userOthers,
-        role: result.userRole,
-        qr_code: result.userQRCode,
-        emergency_person: {
-          firstName: result.emergencyPersonFirstName,
-          middleName: result.emergencyPersonMiddleName,
-          lastName: result.emergencyPersonLastName,
-          suffix: result.emergencyPersonSuffix,
-          age: result.emergencyPersonAge,
-          gender: result.emergencyPersonGender,
-          relationship: result.emergencyPersonRelationship,
-          religion: result.emergencyPersonReligion,
-          email: result.emergencyPersonEmail,
-          phone: result.emergencyPersonPhone,
-          landline: result.emergencyPersonLandline,
-          houseno: result.emergencyPersonHouseno,
-          street: result.emergencyPersonStreet,
-          baranggay: result.emergencyPersonBaranggay,
-          city: result.emergencyPersonCity,
-          province: result.emergencyPersonProvince,
-          region: result.emergencyPersonRegion,
-          zipcode: result.emergencyPersonZipcode,
-        },
+      id: user.userID,
+      firstName: user.userFirstName,
+      middleName: user.userMiddleName,
+      lastName: user.userLastName,
+      suffix: user.userSuffix,
+      age: user.userAge,
+      birthdate: user.userBirthdate,
+      birthplace: user.userBirthplace,
+      gender: user.userGender,
+      religion: user.userReligion,
+      citizenship: user.userCitizenship,
+      civil: user.userCivil,
+      email: user.userEmail,
+      phone: user.userPhone,
+      landline: user.userLandline,
+      houseno: user.userHouseno,
+      street: user.userStreet,
+      baranggay: user.userBaranggay,
+      city: user.userCity,
+      province: user.userProvince,
+      region: user.userRegion,
+      zipcode: user.userZipcode,
+      elementary: user.userElementary,
+      attain: user.userAttain,
+      highschool: user.userHighschool,
+      attain1: user.userAttain1,
+      senior: user.userSenior,
+      attain2: user.userAttain2,
+      college: user.userCollege,
+      attain3: user.userAttain3,
+      employment: user.userEmployment,
+      occupation: user.userOccupation,
+      yearEmploy: user.userYearEmploy,
+      skill1: user.userSkill1,
+      skill2: user.userSkill2,
+      yearUnemploy: user.userYearUnemploy,
+      skill1_1: user.userSkill1_1,
+      skill2_1: user.userSkill2_1,
+      blood: user.userBlood,
+      height: user.userHeight,
+      weight: user.userWeight,
+      disability: user.userDisability,
+      visibility: user.userVisibility,
+      made_disabled: user.userMadeDisabled,
+      status: user.userStatus,
+      device: user.userDevice,
+      specificDevice: user.userSpecificDevice,
+      medicine: user.userMedicine,
+      specificMedicine: user.userSpecificMedicine,
+      others: user.userOthers,
+      role: user.userRole,
+      qr_code: user.userQRCode,
+      emergencyPerson: {
+        firstName: user.emergencyPersonFirstName,
+        middleName: user.emergencyPersonMiddleName,
+        lastName: user.emergencyPersonLastName,
+        suffix: user.emergencyPersonSuffix,
+        age: user.emergencyPersonAge,
+        gender: user.emergencyPersonGender,
+        relationship: user.emergencyPersonRelationship,
+        religion: user.emergencyPersonReligion,
+        email: user.emergencyPersonEmail,
+        phone: user.emergencyPersonPhone,
+        landline: user.emergencyPersonLandline,
+        houseno: user.emergencyPersonHouseno,
+        street: user.emergencyPersonStreet,
+        baranggay: user.emergencyPersonBaranggay,
+        city: user.emergencyPersonCity,
+        province: user.emergencyPersonProvince,
+        region: user.emergencyPersonRegion,
+        zipcode: user.emergencyPersonZipcode,
+      },
+      userFiles: {
+        profilePhotoId: user.profilePhotoId,
+        profilePhotoUrl: user.profilePhotoUrl,
+        resumeId: user.resumeId,
+        resumeUrl: user.resumeUrl,
+        pwdIdId: user.pwdIdId,
+        pwdIdUrl: user.pwdIdUrl,
+        brgyResidenceCertificateId: user.brgyResidenceCertificateId,
+        brgyResidenceCertificateUrl: user.brgyResidenceCertificateUrl,
+        medicalCertificateId: user.medicalCertificateId,
+        medicalCertificateUrl: user.medicalCertificateUrl,
+        proofOfDisabilityId: user.proofOfDisabilityId,
+        proofOfDisabilityUrl: user.proofOfDisabilityUrl,
+        validIdId: user.validIdId,
+        validIdNo: user.validIdNo,
+        validIdUrl: user.validIdUrl,
       },
     };
 
@@ -539,6 +656,23 @@ const handleRefreshToken = async (req, res) => {
         region: user.emergencyPersonRegion,
         zipcode: user.emergencyPersonZipcode,
       },
+      userFiles: {
+        profilePhotoId: user.profilePhotoId,
+        profilePhotoUrl: user.profilePhotoUrl,
+        resumeId: user.resumeId,
+        resumeUrl: user.resumeUrl,
+        pwdIdId: user.pwdIdId,
+        pwdIdUrl: user.pwdIdUrl,
+        brgyResidenceCertificateId: user.brgyResidenceCertificateId,
+        brgyResidenceCertificateUrl: user.brgyResidenceCertificateUrl,
+        medicalCertificateId: user.medicalCertificateId,
+        medicalCertificateUrl: user.medicalCertificateUrl,
+        proofOfDisabilityId: user.proofOfDisabilityId,
+        proofOfDisabilityUrl: user.proofOfDisabilityUrl,
+        validIdId: user.validIdId,
+        validIdNo: user.validIdNo,
+        validIdUrl: user.validIdUrl,
+      },
     };
 
     const accessToken = jwt.sign(
@@ -583,25 +717,28 @@ const logout = async (req, res) => {
 
 const getUsersColumn = async (req, res) => {
   try {
-    const user_table = [];
-    const emergency_person_table = [];
-    const admin_table = [];
-    const user_files_table = [];
+    // const user_table = [];
+    // const emergency_person_table = [];
+    // const admin_table = [];
+    // const user_files_table = [];
 
-    const [user_schema] = await connection.promise().query("DESCRIBE user");
-    user_schema.map((item) => user_table.push(`${item.Field}, ${item.Type}`));
+    // const [user_schema] = await connection.promise().query("DESCRIBE user");
+    // user_schema.map((item) => user_table.push(`${item.Field}, ${item.Type}`));
 
-    const [emergency_person_schema] = await connection.promise().query("DESCRIBE emergency_person");
-    emergency_person_schema.map((item) =>
-      emergency_person_table.push(`${item.Field}, ${item.Type}`)
-    );
+    // const [emergency_person_schema] = await connection.promise().query("DESCRIBE emergency_person");
+    // emergency_person_schema.map((item) =>
+    //   emergency_person_table.push(`${item.Field}, ${item.Type}`)
+    // );
 
-    const [admin_schema] = await connection.promise().query("DESCRIBE admin");
-    admin_schema.map((item) => admin_table.push(`${item.Field}, ${item.Type}`));
+    // const [admin_schema] = await connection.promise().query("DESCRIBE admin");
+    // admin_schema.map((item) => admin_table.push(`${item.Field}, ${item.Type}`));
 
-    const [user_files_schema] = await connection.promise().query("DESCRIBE user_files");
-    user_files_schema.map((item) => user_files_table.push(`${item.Field}, ${item.Type}`));
-    res.status(200).json({ user_table, emergency_person_table, admin_table, user_files_table });
+    // const [user_files_schema] = await connection.promise().query("DESCRIBE user_files");
+    // user_files_schema.map((item) => user_files_table.push(`${item.Field}, ${item.Type}`));
+    // res.status(200).json({ user_table, emergency_person_table, admin_table, user_files_table });
+
+    const [result] = await connection.promise().query("SELECT * from user_files");
+    res.status(200).json(result);
   } catch (error) {
     console.log(error);
     res.status(500).json(error);
@@ -610,12 +747,104 @@ const getUsersColumn = async (req, res) => {
 
 const getUsers = async (req, res) => {
   try {
-    connection.query("SELECT * FROM user", (err, result) => {
+    connection.query(getUsersQuery, (err, result) => {
       if (err) {
         console.log(err);
+
         res.status(403).json(err);
       } else {
-        res.status(200).json(result);
+        const users = result.map((user) => ({
+          id: user.userID,
+          firstName: user.userFirstName,
+          middleName: user.userMiddleName,
+          lastName: user.userLastName,
+          suffix: user.userSuffix,
+          age: user.userAge,
+          birthdate: user.userBirthdate,
+          birthplace: user.userBirthplace,
+          gender: user.userGender,
+          religion: user.userReligion,
+          citizenship: user.userCitizenship,
+          civil: user.userCivil,
+          email: user.userEmail,
+          phone: user.userPhone,
+          landline: user.userLandline,
+          houseno: user.userHouseno,
+          street: user.userStreet,
+          baranggay: user.userBaranggay,
+          city: user.userCity,
+          province: user.userProvince,
+          region: user.userRegion,
+          zipcode: user.userZipcode,
+          elementary: user.userElementary,
+          attain: user.userAttain,
+          highschool: user.userHighschool,
+          attain1: user.userAttain1,
+          senior: user.userSenior,
+          attain2: user.userAttain2,
+          college: user.userCollege,
+          attain3: user.userAttain3,
+          employment: user.userEmployment,
+          occupation: user.userOccupation,
+          yearEmploy: user.userYearEmploy,
+          skill1: user.userSkill1,
+          skill2: user.userSkill2,
+          yearUnemploy: user.userYearUnemploy,
+          skill1_1: user.userSkill1_1,
+          skill2_1: user.userSkill2_1,
+          blood: user.userBlood,
+          height: user.userHeight,
+          weight: user.userWeight,
+          disability: user.userDisability,
+          visibility: user.userVisibility,
+          made_disabled: user.userMadeDisabled,
+          status: user.userStatus,
+          device: user.userDevice,
+          specificDevice: user.userSpecificDevice,
+          medicine: user.userMedicine,
+          specificMedicine: user.userSpecificMedicine,
+          others: user.userOthers,
+          role: user.userRole,
+          qr_code: user.userQRCode,
+          emergencyPerson: {
+            firstName: user.emergencyPersonFirstName,
+            middleName: user.emergencyPersonMiddleName,
+            lastName: user.emergencyPersonLastName,
+            suffix: user.emergencyPersonSuffix,
+            age: user.emergencyPersonAge,
+            gender: user.emergencyPersonGender,
+            relationship: user.emergencyPersonRelationship,
+            religion: user.emergencyPersonReligion,
+            email: user.emergencyPersonEmail,
+            phone: user.emergencyPersonPhone,
+            landline: user.emergencyPersonLandline,
+            houseno: user.emergencyPersonHouseno,
+            street: user.emergencyPersonStreet,
+            baranggay: user.emergencyPersonBaranggay,
+            city: user.emergencyPersonCity,
+            province: user.emergencyPersonProvince,
+            region: user.emergencyPersonRegion,
+            zipcode: user.emergencyPersonZipcode,
+          },
+          userFiles: {
+            profilePhotoId: user.profilePhotoId,
+            profilePhotoUrl: user.profilePhotoUrl,
+            resumeId: user.resumeId,
+            resumeUrl: user.resumeUrl,
+            pwdIdId: user.pwdIdId,
+            pwdIdUrl: user.pwdIdUrl,
+            brgyResidenceCertificateId: user.brgyResidenceCertificateId,
+            brgyResidenceCertificateUrl: user.brgyResidenceCertificateUrl,
+            medicalCertificateId: user.medicalCertificateId,
+            medicalCertificateUrl: user.medicalCertificateUrl,
+            proofOfDisabilityId: user.proofOfDisabilityId,
+            proofOfDisabilityUrl: user.proofOfDisabilityUrl,
+            validIdId: user.validIdId,
+            validIdNo: user.validIdNo,
+            validIdUrl: user.validIdUrl,
+          },
+        }));
+        res.status(200).json(users);
       }
     });
   } catch (error) {
@@ -704,6 +933,23 @@ const getUserByID = async (req, res) => {
         region: user.emergencyPersonRegion,
         zipcode: user.emergencyPersonZipcode,
       },
+      userFiles: {
+        profilePhotoId: user.profilePhotoId,
+        profilePhotoUrl: user.profilePhotoUrl,
+        resumeId: user.resumeId,
+        resumeUrl: user.resumeUrl,
+        pwdIdId: user.pwdIdId,
+        pwdIdUrl: user.pwdIdUrl,
+        brgyResidenceCertificateId: user.brgyResidenceCertificateId,
+        brgyResidenceCertificateUrl: user.brgyResidenceCertificateUrl,
+        medicalCertificateId: user.medicalCertificateId,
+        medicalCertificateUrl: user.medicalCertificateUrl,
+        proofOfDisabilityId: user.proofOfDisabilityId,
+        proofOfDisabilityUrl: user.proofOfDisabilityUrl,
+        validIdId: user.validIdId,
+        validIdNo: user.validIdNo,
+        validIdUrl: user.validIdUrl,
+      },
     };
     res.status(200).json(result);
   } catch (error) {
@@ -714,14 +960,51 @@ const getUserByID = async (req, res) => {
 const deleteUserByID = async (req, res) => {
   const userId = req.params.userId;
   try {
-    const [userResult] = await connection
-      .promise()
-      .query("SELECT qr_code FROM user WHERE id = ?", [userId]);
+    // Step 1: Get user information including file details
+    const [userResult] = await connection.promise().query(
+      `
+        SELECT 
+          qr_code,
+          user_files.profile_photo_id,
+          user_files.resume_id,
+          user_files.pwd_id_id,
+          user_files.brgy_residence_certificate_id,
+          user_files.medical_certificate_id,
+          user_files.proof_of_disability_id,
+          user_files.valid_id_id
+        FROM user
+        LEFT JOIN user_files ON user.id = user_files.userId
+        WHERE user.id = ?
+      `,
+      [userId]
+    );
 
     if (userResult.length === 0) {
       res.status(404).json("User not found");
       return;
     }
+
+    const user = userResult[0];
+
+    // Step 2: Delete images from Cloudinary
+    const fileIds = [
+      user.qr_code.image_id,
+      user.profile_photo_id,
+      user.resume_id,
+      user.pwd_id_id,
+      user.brgy_residence_certificate_id,
+      user.medical_certificate_id,
+      user.proof_of_disability_id,
+      user.valid_id_id,
+    ];
+
+    const deletePromises = fileIds
+      .filter((id) => id) // Filter out null or undefined ids
+      .map((id) => cloudinary.uploader.destroy(id));
+
+    await Promise.all(deletePromises);
+
+    // Step 3: Delete user record
     const [deleteResult] = await connection
       .promise()
       .query("DELETE FROM user WHERE id = ?", [userId]);
@@ -730,8 +1013,7 @@ const deleteUserByID = async (req, res) => {
       res.status(404).json("User not found");
       return;
     }
-    const imageId = userResult[0].qr_code.image_id;
-    await cloudinary.uploader.destroy(imageId);
+
     res.status(200).json("User deleted successfully!");
   } catch (error) {
     console.log(error);

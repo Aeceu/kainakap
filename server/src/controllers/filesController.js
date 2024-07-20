@@ -112,7 +112,7 @@ const extractDataFromID = async (req, res) => {
     }
 
     res.status(200).json({
-      message: "ID is verified",
+      message: "ID is verified successfully.",
       resultData,
     });
   } catch (error) {

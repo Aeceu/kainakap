@@ -1,23 +1,28 @@
-import { useDispatch, useSelector } from "react-redux";
 import Bounce from "../animation/bounce";
-import { AppDispatch, RootState } from "../../redux/store";
-import { registerUser } from "../../redux/actions/userAction";
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { resetNewUser } from "../../redux/slices/userSlice";
+import { UserContext } from "../../context/UserContext";
+import axios from "../../api/axios";
 
-type Props = {
-  setCurrentStep: React.Dispatch<React.SetStateAction<number>>;
-};
-
-const DoneRegister: React.FC<Props> = ({ setCurrentStep }) => {
-  const state = useSelector((state: RootState) => state.user);
-  const dispatch = useDispatch<AppDispatch>();
+const DoneRegister = ({ setCurrentStep }) => {
+  const { newUser, files, registrationStatus, setRegistrationStatus, idData } =
+    useContext(UserContext);
 
   useEffect(() => {
     const handleRegister = async () => {
-      if (state.newUser && state.registrationStatus === "pending") {
-        await dispatch(registerUser(state.newUser));
+      try {
+        setRegistrationStatus("pending");
+        const res = await axios.post("/user/signup", {
+          newUser,
+          files,
+          idData,
+        });
+        console.log(res.data);
+      } catch (error) {
+        setRegistrationStatus("failed");
+        console.log(error);
+      } finally {
+        setRegistrationStatus("completed");
       }
     };
     handleRegister();
@@ -30,9 +35,9 @@ const DoneRegister: React.FC<Props> = ({ setCurrentStep }) => {
 
   return (
     <div className="w-full h-full flex flex-col gap-2 items-center justify-center">
-      {state.loading ? (
+      {registrationStatus === "pending" ? (
         <span className="w-20 h-20 loading loading-spinner text-success"></span>
-      ) : state.error ? (
+      ) : registrationStatus === "failed" ? (
         <>
           <Bounce>
             <img src="/cross.svg" alt="done" className="w-20 h-20" />

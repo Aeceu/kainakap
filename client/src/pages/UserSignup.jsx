@@ -6,13 +6,15 @@ import Education from "../components/signupsteps/Education";
 import Employment from "../components/signupsteps/Employment";
 import Medical from "../components/signupsteps/Medical";
 import Verification from "../components/signupsteps/Verification";
+import DoneRegister from "../components/signupsteps/DoneRegister";
 import { Link } from "react-router-dom";
 import { ChevronLeft } from "lucide-react";
 import { UserContext } from "../context/UserContext";
 
 const UserSignup = () => {
   const { newUser } = useContext(UserContext);
-  const [currentStep, setCurrentStep] = useState(6);
+  const [currentStep, setCurrentStep] = useState(0);
+  const [isValidID, setIsValidID] = useState(false);
 
   return (
     <div className="w-full h-screen overflow-hidden  flex flex-col items-center bg-orange-50">
@@ -113,8 +115,10 @@ const UserSignup = () => {
         {currentStep === 3 && <Education setCurrentStep={setCurrentStep} />}
         {currentStep === 4 && <Employment setCurrentStep={setCurrentStep} />}
         {currentStep === 5 && <Medical setCurrentStep={setCurrentStep} />}
-        {currentStep === 6 && <Verification setCurrentStep={setCurrentStep} />}
-        {/* {currentStep === 7 && <DoneRegister setCurrentStep={setCurrentStep} />} */}
+        {currentStep === 6 && (
+          <Verification setCurrentStep={setCurrentStep} setIsValidID={setIsValidID} />
+        )}
+        {currentStep === 7 && <DoneRegister setCurrentStep={setCurrentStep} />}
       </div>
     </div>
   );

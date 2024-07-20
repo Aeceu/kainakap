@@ -84,10 +84,37 @@ export const UserProvider = ({ children }) => {
     specificMedicine: "",
     others: "",
   });
+  const [files, setFiles] = useState({
+    valid_id: "",
+    profilePhoto: "",
+    resume: "",
+    pwd_id: "",
+    baranggay_residence_certificate: "",
+    medical_certificate: "",
+    proof_of_disability: "",
+  });
+
+  const [idData, setidData] = useState(null);
+  const [registrationStatus, setRegistrationStatus] = useState("");
 
   return (
     <UserContext.Provider
-      value={{ userId, setUserId, user, setUser, token, setToken, newUser, setNewUser }}>
+      value={{
+        userId,
+        setUserId,
+        user,
+        setUser,
+        token,
+        setToken,
+        newUser,
+        setNewUser,
+        files,
+        setFiles,
+        registrationStatus,
+        setRegistrationStatus,
+        idData,
+        setidData,
+      }}>
       {children}
     </UserContext.Provider>
   );
