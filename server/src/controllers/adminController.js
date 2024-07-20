@@ -1,4 +1,4 @@
-const uuid = require("uuid");
+const uuid = require("uuid").v4;
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const connection = require("../utils/dbConnect");
@@ -9,7 +9,7 @@ const login = async (req, res) => {
 
     const [adminExists] = await connection
       .promise()
-      .query("SELCT * FROM admin WHERE email = ?", [email]);
+      .query("SELECT * FROM admin WHERE email = ?", [email]);
 
     if (adminExists.length === 0) {
       return res.status(403).json({
@@ -53,7 +53,7 @@ const login = async (req, res) => {
 
     // Send response
     res.status(200).json({
-      message: `${result.role} AUTHENTICATED!`,
+      message: `${admin.role} AUTHENTICATED!`,
       accessToken,
       admin: admin,
     });
@@ -81,13 +81,14 @@ const signup = async (req, res) => {
     await connection.promise().query(
       `INSERT INTO \`admin\` (
         \`id\`, 
-          \`userName\`, 
-          \`firstName\`, 
-          \`lastName\`, 
-          \`phone\`, 
-          \`email\`, 
-          \`password\`, 
-        ) VALUES (?,?,?,?,?,?,?)`,
+        \`userName\`, 
+        \`firstName\`, 
+        \`lastName\`, 
+        \`phone\`, 
+        \`email\`, 
+        \`password\`,
+        \`role\`
+        ) VALUES (?,?,?,?,?,?,?,?)`,
       [
         newID,
         newAdmin.userName,
@@ -96,6 +97,7 @@ const signup = async (req, res) => {
         newAdmin.phone,
         newAdmin.email,
         hashPass,
+        newAdmin.role,
       ]
     );
     res.status(200).json({ message: "New admin created!" });
