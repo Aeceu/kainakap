@@ -1,17 +1,16 @@
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
 import { axiosPrivate } from "../../redux/api";
 import useRefreshToken from "./useRefreshToken";
-import { useSelector } from "react-redux";
-import { RootState } from "../../redux/store";
+import { UserContext } from "../../context/UserContext";
 
 const useAxiosPrivate = () => {
+  const { adminToken } = useContext(UserContext);
   const refresh = useRefreshToken();
-  const { token } = useSelector((state: RootState) => state.admin);
   useEffect(() => {
     const requestInterceptors = axiosPrivate.interceptors.request.use(
       (config) => {
         if (!config.headers["Authorization"]) {
-          config.headers["Authorization"] = `Bearer ${token}`;
+          config.headers["Authorization"] = `Bearer ${adminToken}`;
         }
         return config;
       },

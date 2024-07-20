@@ -1,15 +1,9 @@
-import axios from "../../redux/api";
 import { useEffect, useState } from "react";
 import { BarChart, Bar, Rectangle, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
-
-type TData = {
-  name: string;
-  count: number;
-  length: number;
-};
+import axios from "../../api/axios";
 
 const AdminUserChart = () => {
-  const [data, setData] = useState<TData[]>([
+  const [data, setData] = useState([
     {
       name: "Admin",
       count: 0,
@@ -41,10 +35,8 @@ const AdminUserChart = () => {
         console.log(error);
       }
     };
-    fetchCount();
+    // fetchCount();
   }, []);
-
-  console.log(data);
 
   return (
     <ResponsiveContainer width="100%" height="100%">

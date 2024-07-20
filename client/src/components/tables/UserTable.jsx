@@ -1,16 +1,8 @@
 import { useEffect, useState } from "react";
-import axios from "../../redux/api";
+import axios from "../../api/axios";
 
-type Admins = {
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  role: string;
-};
-
-const AdminTable = () => {
-  const [admins, setAdmins] = useState<Admins[]>([]);
+const UserTable = () => {
+  const [admins, setAdmins] = useState([]);
 
   useEffect(() => {
     const getAllAdmins = async () => {
@@ -23,7 +15,7 @@ const AdminTable = () => {
         alert("ERROR!");
       }
     };
-    getAllAdmins();
+    // getAllAdmins();
   }, []);
   return (
     <div className="overflow-x-auto">
@@ -53,4 +45,4 @@ const AdminTable = () => {
     </div>
   );
 };
-export default AdminTable;
+export default UserTable;

@@ -2,8 +2,9 @@ import { createContext, useState } from "react";
 
 export const UserContext = createContext();
 
-// eslint-disable-next-line react/prop-types
 export const UserProvider = ({ children }) => {
+  const [admin, setAdmin] = useState(null);
+  const [adminToken, setAdminToken] = useState("");
   const [userId, setUserId] = useState("");
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
@@ -114,6 +115,10 @@ export const UserProvider = ({ children }) => {
         setRegistrationStatus,
         idData,
         setidData,
+        admin,
+        setAdmin,
+        adminToken,
+        setAdminToken,
       }}>
       {children}
     </UserContext.Provider>

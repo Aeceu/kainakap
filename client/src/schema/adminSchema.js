@@ -13,7 +13,7 @@ export const adminSignup = z
     firstName: z.string().min(1, "Required"),
     lastName: z.string().min(1, "Required"),
     phone: z.string().min(1, "Required"),
-    username: z.string().min(1, "Required"),
+    userName: z.string().min(1, "Required"),
     email: z.string().email("Enter your email address."),
     password: z
       .string({ message: "Enter your password." })

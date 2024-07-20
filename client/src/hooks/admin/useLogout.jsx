@@ -1,20 +1,20 @@
 import { useNavigate } from "react-router-dom";
-import axios from "../../redux/api";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "../../redux/store";
-import { handleLogout } from "../../redux/slices/adminSlice";
+import axios from "../../api/axios";
+import { useContext } from "react";
+import { UserContext } from "../../context/UserContext";
 
 export const useAdminLogout = () => {
-  const dispatch = useDispatch<AppDispatch>();
+  const { setAdmin, setAdminToken } = useContext(UserContext);
   const navigate = useNavigate();
   const logout = async () => {
-    dispatch(handleLogout());
     try {
       const res = await axios.get("/admin/logout", {
         withCredentials: true,
       });
       console.log(res.data);
       alert(res.data);
+      setAdmin(null);
+      setAdminToken("");
       navigate("/auth/admin/login");
     } catch (error) {
       console.log(error);

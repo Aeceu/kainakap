@@ -1,8 +1,8 @@
 import React from "react";
 
-const UserModal: React.FC = () => {
+const UserModal = () => {
   const openModal = () => {
-    const modal = document.getElementById("my_modal_2") as HTMLDialogElement | null;
+    const modal = document.getElementById("my_modal_2");
     if (modal) {
       modal.showModal();
     }
