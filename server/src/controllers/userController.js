@@ -6,7 +6,6 @@ const cloudinary = require("../utils/cloudinary");
 const transporter = require("../utils/transporter");
 const GenerateQRCode = require("../utils/generateQRCode");
 const calculateExpirationDate = require("../utils/calculateExpDate");
-
 const { getUserByIdQuery, getUsersQuery } = require("../queries/getUserById");
 
 const signup = async (req, res) => {
@@ -475,6 +474,7 @@ const verifyOTP = async (req, res) => {
       specificMedicine: user.userSpecificMedicine,
       others: user.userOthers,
       role: user.userRole,
+      verificationStatus: user.verificationStatus,
       qr_code: user.userQRCode,
       emergencyPerson: {
         firstName: user.emergencyPersonFirstName,
@@ -628,6 +628,7 @@ const handleRefreshToken = async (req, res) => {
       specificMedicine: user.userSpecificMedicine,
       others: user.userOthers,
       role: user.userRole,
+      verificationStatus: user.verificationStatus,
       qr_code: user.userQRCode,
       emergencyPerson: {
         firstName: user.emergencyPersonFirstName,
@@ -798,6 +799,7 @@ const getUsers = async (req, res) => {
           specificMedicine: user.userSpecificMedicine,
           others: user.userOthers,
           role: user.userRole,
+          verificationStatus: user.verificationStatus,
           qr_code: user.userQRCode,
           emergencyPerson: {
             firstName: user.emergencyPersonFirstName,
@@ -906,6 +908,7 @@ const getUserByID = async (req, res) => {
       specificMedicine: user.userSpecificMedicine,
       others: user.userOthers,
       role: user.userRole,
+      verificationStatus: user.verificationStatus,
       qr_code: user.userQRCode,
       emergencyPerson: {
         firstName: user.emergencyPersonFirstName,
@@ -1074,6 +1077,7 @@ const getUserByQR = async (req, res) => {
       specificMedicine: user.userSpecificMedicine,
       others: user.userOthers,
       role: user.userRole,
+      verificationStatus: user.verificationStatus,
       qr_code: user.userQRCode,
       emergencyPerson: {
         firstName: user.emergencyPersonFirstName,

@@ -1,4 +1,7 @@
+import { useContext } from "react";
+import { UserContext } from "../context/UserContext";
 const Home = () => {
+  const { user } = useContext(UserContext);
   return (
     <div className="w-full min-h-screen relative flex flex-col  ">
       <div className="z-0 filter blur-[120px] opacity-50  bg-blue-500  rounded-full w-[700px] h-[700px] absolute left-[30%]" />
@@ -16,14 +19,14 @@ const Home = () => {
         </p>
       </div>
       <div className="z-10 w-full flex items-center justify-center p-8">
-        <div className="mockup-browser border bg-white w-3/4 ">
+        <div className="mockup-browser border bg-white w-3/4  ">
           <div className="mockup-browser-toolbar">
             <div className="input">https://pwd-kainakap.com</div>
           </div>
-          <div className=" h-[1000px]  px-8 py-8 bg-base-200 flex flex-col gap-4">
-            {/* <div className="flex items-centr gap-4">
+          <div className=" h-full   px-8 py-8 bg-base-200 flex flex-col gap-4">
+            <div className="flex items-centr gap-4">
               <img
-                src={state.user?.qr_code.secure_url}
+                src={user.qr_code.secure_url}
                 alt="qr_code"
                 className="w-[300px] h-[300px] col-span-2 rounded-md"
               />
@@ -33,37 +36,37 @@ const Home = () => {
                     Personal Information
                   </h1>
                   <li className="px-4 py-2 h-max col-span-2 w-full bg-white rounded-md shadow-md">
-                    First name: {state.user?.firstName}
+                    First name: {user.firstName}
                   </li>
                   <li className="px-4 py-2 h-max col-span-1 w-full bg-white rounded-md shadow-md">
-                    Middle name: {state.user?.middleName}
+                    Middle name: {user.middleName}
                   </li>
                   <li className="px-4 py-2 h-max col-span-1 w-full bg-white rounded-md shadow-md">
-                    Last name: {state.user?.lastName}
+                    Last name: {user.lastName}
                   </li>
                   <li className="px-4 py-2 h-max col-span-2 w-full bg-white rounded-md shadow-md">
-                    Email: {state.user?.email}
+                    Email: {user.email}
                   </li>
                   <li className="px-4 py-2 h-max col-span-1 w-full bg-white rounded-md shadow-md">
-                    Age: {state.user?.age}
+                    Age: {user.age}
                   </li>
                   <li className="px-4 py-2 h-max col-span-1 w-full bg-white rounded-md shadow-md">
-                    Gender: {state.user?.gender}
+                    Gender: {user.gender}
                   </li>
                   <li className="px-4 py-2 h-max col-span-1 w-full bg-white rounded-md shadow-md">
-                    Birthdate: {state.user?.birthdate}
+                    Birthdate: {user.birthdate}
                   </li>
                   <li className="px-4 py-2 h-max col-span-1 w-full bg-white rounded-md shadow-md">
-                    Birthplace: {state.user?.birthplace}
+                    Birthplace: {user.birthplace}
                   </li>
                   <li className="px-4 py-2 h-max col-span-1 w-full bg-white rounded-md shadow-md">
-                    Religion: {state.user?.religion}
+                    Religion: {user.religion}
                   </li>
                   <li className="px-4 py-2 h-max col-span-1 w-full bg-white rounded-md shadow-md">
-                    Citizenship: {state.user?.citizenship}
+                    Citizenship: {user.citizenship}
                   </li>
                   <li className="px-4 py-2 h-max col-span-1 w-full bg-white rounded-md shadow-md">
-                    Civil Status: {state.user?.civil}
+                    Civil Status: {user.civil}
                   </li>
                 </ul>
               </div>
@@ -74,10 +77,10 @@ const Home = () => {
                   Contact Information
                 </h1>
                 <li className="px-4 py-2 h-max col-span-2 w-full bg-white rounded-md shadow-md">
-                  Phone no.: {state.user?.phone}
+                  Phone no.: {user.phone}
                 </li>
                 <li className="px-4 py-2 h-max col-span-2 w-full bg-white rounded-md shadow-md">
-                  Landline: {state.user?.landline}
+                  Landline: {user.landline}
                 </li>
               </ul>
             </div>
@@ -87,25 +90,25 @@ const Home = () => {
                   Address Information
                 </h1>
                 <li className="px-4 py-2 h-max col-span-1 w-full bg-white rounded-md shadow-md">
-                  House no.: {state.user?.houseno}
+                  House no.: {user.houseno}
                 </li>
                 <li className="px-4 py-2 h-max col-span-2 w-full bg-white rounded-md shadow-md">
-                  Street: {state.user?.street}
+                  Street: {user.street}
                 </li>
                 <li className="px-4 py-2 h-max col-span-1 w-full bg-white rounded-md shadow-md">
-                  Baranggay: {state.user?.baranggay}
+                  Baranggay: {user.baranggay}
                 </li>
                 <li className="px-4 py-2 h-max col-span-1 w-full bg-white rounded-md shadow-md">
-                  District: {state.user?.district}
+                  District: {user.district}
                 </li>
                 <li className="px-4 py-2 h-max col-span-1 w-full bg-white rounded-md shadow-md">
-                  City: {state.user?.city}
+                  City: {user.city}
                 </li>
                 <li className="px-4 py-2 h-max col-span-1 w-full bg-white rounded-md shadow-md">
-                  Province: {state.user?.province}
+                  Province: {user.province}
                 </li>
                 <li className="px-4 py-2 h-max col-span-1 w-full bg-white rounded-md shadow-md">
-                  Zip code: {state.user?.zipcode}
+                  Zip code: {user.zipcode}
                 </li>
               </ul>
             </div>
@@ -115,38 +118,32 @@ const Home = () => {
                   Education Information
                 </h1>
                 <li className="px-4 py-2 h-max col-span-2 w-full bg-white rounded-md shadow-md">
-                  Elementary school: {state.user?.elementary}
+                  Elementary school: {user.elementary}
                 </li>
                 <li className="px-4 py-2 h-max col-span-2 w-full bg-white rounded-md shadow-md ">
                   Elementary school attainment:{" "}
-                  {state.user?.attain === "Select your school Attainment" ? "" : state.user?.attain}
+                  {user.attain === "Select your school Attainment" ? "" : user.attain}
                 </li>
                 <li className="px-4 py-2 h-max col-span-2 w-full bg-white rounded-md shadow-md">
-                  Junior Highschool: {state.user?.highschool}
+                  Junior Highschool: {user.highschool}
                 </li>
                 <li className="px-4 py-2 h-max col-span-2 w-full bg-white rounded-md shadow-md ">
                   Junior Highschool attainment:{" "}
-                  {state.user?.attain === "Select your school Attainment"
-                    ? ""
-                    : state.user?.attain1}
+                  {user.attain === "Select your school Attainment" ? "" : user.attain1}
                 </li>
                 <li className="px-4 py-2 h-max col-span-2 w-full bg-white rounded-md shadow-md">
-                  Senior Highschool: {state.user?.senior}
+                  Senior Highschool: {user.senior}
                 </li>
                 <li className="px-4 py-2 h-max col-span-2 w-full bg-white rounded-md shadow-md ">
                   Senior Highschool attainment:{" "}
-                  {state.user?.attain === "Select your school Attainment"
-                    ? ""
-                    : state.user?.attain2}
+                  {user.attain === "Select your school Attainment" ? "" : user.attain2}
                 </li>
                 <li className="px-4 py-2 h-max col-span-2 w-full bg-white rounded-md shadow-md">
-                  College: {state.user?.college}
+                  College: {user.college}
                 </li>
                 <li className="px-4 py-2 h-max col-span-2 w-full bg-white rounded-md shadow-md ">
                   College attainment:{" "}
-                  {state.user?.attain === "Select your school Attainment"
-                    ? ""
-                    : state.user?.attain3}
+                  {user.attain === "Select your school Attainment" ? "" : user.attain3}
                 </li>
               </ul>
             </div>
@@ -156,28 +153,28 @@ const Home = () => {
                   Employment Information
                 </h1>
                 <li className="px-4 py-2 h-max col-span-1 w-full bg-white rounded-md shadow-md">
-                  Current employment: {state.user?.employment}
+                  Current employment: {user.employment}
                 </li>
                 <li className="px-4 py-2 h-max col-span-1 w-full bg-white rounded-md shadow-md">
-                  Occupation: {state.user?.occupation}
+                  Occupation: {user.occupation}
                 </li>
                 <li className="px-4 py-2 h-max col-span-1 w-full bg-white rounded-md shadow-md">
-                  Year's employed: {state.user?.yearEmploy}
+                  Year's employed: {user.yearEmploy}
                 </li>
                 <li className="px-4 py-2 h-max col-span-1 w-full bg-white rounded-md shadow-md">
-                  Skill's attain: {state.user?.skill1}
+                  Skill's attain: {user.skill1}
                 </li>
                 <li className="px-4 py-2 h-max col-span-1 w-full bg-white rounded-md shadow-md">
-                  Skill's attain: {state.user?.skill2}
+                  Skill's attain: {user.skill2}
                 </li>
                 <li className="px-4 py-2 h-max col-span-1 w-full bg-white rounded-md shadow-md">
-                  Year's employed: {state.user?.yearUnemploy}
+                  Year's employed: {user.yearUnemploy}
                 </li>
                 <li className="px-4 py-2 h-max col-span-1 w-full bg-white rounded-md shadow-md">
-                  Skill's attain: {state.user?.skill1_1}
+                  Skill's attain: {user.skill1_1}
                 </li>
                 <li className="px-4 py-2 h-max col-span-1 w-full bg-white rounded-md shadow-md">
-                  Skill's attain: {state.user?.skill2_1}
+                  Skill's attain: {user.skill2_1}
                 </li>
               </ul>
             </div>
@@ -187,40 +184,40 @@ const Home = () => {
                   Medical Information
                 </h1>
                 <li className="px-4 py-2 h-max col-span-1 w-full bg-white rounded-md shadow-md">
-                  Blood: {state.user?.blood}
+                  Blood: {user.blood}
                 </li>
                 <li className="px-4 py-2 h-max col-span-1 w-full bg-white rounded-md shadow-md">
-                  Height: {state.user?.height}
+                  Height: {user.height}
                 </li>
                 <li className="px-4 py-2 h-max col-span-1 w-full bg-white rounded-md shadow-md">
-                  Weight: {state.user?.weight}
+                  Weight: {user.weight}
                 </li>
                 <li className="px-4 py-2 h-max col-span-2 w-full bg-white rounded-md shadow-md">
-                  Disability: {state.user?.disability}
+                  Disability: {user.disability}
                 </li>
                 <li className="px-4 py-2 h-max col-span-1 w-full bg-white rounded-md shadow-md">
-                  Visibility: {state.user?.visibility}
+                  Visibility: {user.visibility}
                 </li>
                 <li className="px-4 py-2 h-max col-span-1 w-full bg-white rounded-md shadow-md">
-                  Made you disabled: {state.user?.made_disabled}
+                  Made you disabled: {user.made_disabled}
                 </li>
                 <li className="px-4 py-2 h-max col-span-1 w-full bg-white rounded-md shadow-md">
-                  Curent status: {state.user?.status}
+                  Curent status: {user.status}
                 </li>
                 <li className="px-4 py-2 h-max col-span-2 w-full bg-white rounded-md shadow-md">
-                  Device using: {state.user?.device}
+                  Device using: {user.device}
                 </li>
                 <li className="px-4 py-2 h-max col-span-1 w-full bg-white rounded-md shadow-md">
-                  Specific Device using: {state.user?.specificDevice}
+                  Specific Device using: {user.specificDevice}
                 </li>
                 <li className="px-4 py-2 h-max col-span-2 w-full bg-white rounded-md shadow-md">
-                  Medicine using: {state.user?.medicine}
+                  Medicine using: {user.medicine}
                 </li>
                 <li className="px-4 py-2 h-max col-span-1 w-full bg-white rounded-md shadow-md">
-                  Specific medicine using: {state.user?.specificMedicine}
+                  Specific medicine using: {user.specificMedicine}
                 </li>
                 <li className="px-4 py-2 h-max col-span-1 w-full bg-white rounded-md shadow-md">
-                  Others: {state.user?.others}
+                  Others: {user.others}
                 </li>
               </ul>
             </div>
@@ -230,67 +227,67 @@ const Home = () => {
                   Person to contact incase of emergency
                 </h1>
                 <li className="px-4 py-2 h-max col-span-1 w-full bg-white rounded-md shadow-md">
-                  Lastname: {state.user?.emergencyPerson?.lastName}
+                  Lastname: {user.emergencyPerson?.lastName}
                 </li>
                 <li className="px-4 py-2 h-max col-span-1 w-full bg-white rounded-md shadow-md">
-                  Firstname: {state.user?.emergencyPerson?.firstName}
+                  Firstname: {user.emergencyPerson?.firstName}
                 </li>
                 <li className="px-4 py-2 h-max col-span-1 w-full bg-white rounded-md shadow-md">
-                  Middlename: {state.user?.emergencyPerson?.middleName}
+                  Middlename: {user.emergencyPerson?.middleName}
                 </li>
                 <li className="px-4 py-2 h-max col-span-1 w-full bg-white rounded-md shadow-md">
-                  Suffice: {state.user?.emergencyPerson?.suffix}
+                  Suffice: {user.emergencyPerson?.suffix}
                 </li>
                 <li className="px-4 py-2 h-max col-span-1 w-full bg-white rounded-md shadow-md">
-                  Age: {state.user?.emergencyPerson?.age}
+                  Age: {user.emergencyPerson?.age}
                 </li>
                 <li className="px-4 py-2 h-max col-span-1 w-full bg-white rounded-md shadow-md">
-                  Gender: {state.user?.emergencyPerson?.gender}
+                  Gender: {user.emergencyPerson?.gender}
                 </li>
                 <li className="px-4 py-2 h-max col-span-1 w-full bg-white rounded-md shadow-md">
-                  Relationship: {state.user?.emergencyPerson?.relationship}
+                  Relationship: {user.emergencyPerson?.relationship}
                 </li>
                 <li className="px-4 py-2 h-max col-span-1 w-full bg-white rounded-md shadow-md">
-                  Religion: {state.user?.emergencyPerson?.religion}
+                  Religion: {user.emergencyPerson?.religion}
                 </li>
                 <h1 className="w-full border-b col-span-4 font-bold text-2xl">
                   Emergency Contact Information
                 </h1>
                 <li className="px-4 py-2 h-max col-span-2 w-full bg-white rounded-md shadow-md">
-                  Email: {state.user?.emergencyPerson?.email}
+                  Email: {user.emergencyPerson?.email}
                 </li>
                 <li className="px-4 py-2 h-max col-span-1 w-full bg-white rounded-md shadow-md">
-                  Phone no.: {state.user?.emergencyPerson?.phone}
+                  Phone no.: {user.emergencyPerson?.phone}
                 </li>
                 <li className="px-4 py-2 h-max col-span-1 w-full bg-white rounded-md shadow-md">
-                  Landline: {state.user?.emergencyPerson?.landline}
+                  Landline: {user.emergencyPerson?.landline}
                 </li>
                 <h1 className="w-full border-b col-span-4 font-bold text-2xl">
                   Home/Permanent Address
                 </h1>
                 <li className="px-4 py-2 h-max col-span-1 w-full bg-white rounded-md shadow-md">
-                  House no.: {state.user?.emergencyPerson?.houseno}
+                  House no.: {user.emergencyPerson?.houseno}
                 </li>
                 <li className="px-4 py-2 h-max col-span-2 w-full bg-white rounded-md shadow-md">
-                  Street: {state.user?.emergencyPerson?.street}
+                  Street: {user.emergencyPerson?.street}
                 </li>
                 <li className="px-4 py-2 h-max col-span-1 w-full bg-white rounded-md shadow-md">
-                  Baranggay: {state.user?.emergencyPerson?.baranggay}
+                  Baranggay: {user.emergencyPerson?.baranggay}
                 </li>
                 <li className="px-4 py-2 h-max col-span-1 w-full bg-white rounded-md shadow-md">
-                  District: {state.user?.emergencyPerson?.district}
+                  District: {user.emergencyPerson?.district}
                 </li>
                 <li className="px-4 py-2 h-max col-span-1 w-full bg-white rounded-md shadow-md">
-                  City: {state.user?.emergencyPerson?.city}
+                  City: {user.emergencyPerson?.city}
                 </li>
                 <li className="px-4 py-2 h-max col-span-1 w-full bg-white rounded-md shadow-md">
-                  Province: {state.user?.emergencyPerson?.province}
+                  Province: {user.emergencyPerson?.province}
                 </li>
                 <li className="px-4 py-2 h-max col-span-1 w-full bg-white rounded-md shadow-md">
-                  Zip code: {state.user?.emergencyPerson?.zipcode}
+                  Zip code: {user.emergencyPerson?.zipcode}
                 </li>
               </ul>
-            </div> */}
+            </div>
           </div>
         </div>
       </div>
