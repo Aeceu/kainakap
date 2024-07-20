@@ -7,6 +7,7 @@ const connection = require("./utils/dbConnect");
 
 // IMPORTED ROUTES
 const userRoute = require("./routes/userRoutes");
+const adminRoute = require("./routes/adminRoutes");
 const fileRoute = require("./routes/fileRoutes");
 
 // CONFIGURATIONS
@@ -29,7 +30,9 @@ app.use(
 
 // API ROUTES
 app.use("/api/v1", userRoute);
+app.use("/api/v1", adminRoute);
 app.use("/api/v1", fileRoute);
+
 app.get("/", async (req, res) => {
   try {
     const [result] = await connection.promise().query("SHOW TABLES");

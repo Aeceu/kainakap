@@ -688,7 +688,7 @@ const handleRefreshToken = async (req, res) => {
 
 const logout = async (req, res) => {
   const cookies = req.cookies;
-  if (!cookies?.jwt) return res.sendStatus(24);
+  if (!cookies?.jwt) return res.sendStatus(204);
 
   const refreshToken = cookies.jwt;
   const foundUser = await connection
