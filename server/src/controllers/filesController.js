@@ -100,9 +100,10 @@ const extractDataFromID = async (req, res) => {
       });
     }
 
+    // Checks if the id is already registered with another user.
     const [user_files_result] = await connection
       .promise()
-      .query(`SELECT * FROM user_file WHERE valid_id_no = ?`, [resultData.idNumber]);
+      .query("SELECT * FROM `user_files` WHERE `valid_id_no` = ?", [resultData.idNumber]);
 
     if (user_files_result.length > 0) {
       return res.status(403).json({
@@ -110,10 +111,13 @@ const extractDataFromID = async (req, res) => {
       });
     }
 
-    res.sendStatus(200);
+    res.status(200).json({
+      message: "ID is verified",
+      resultData,
+    });
   } catch (error) {
     console.log(error);
-    res.status(500).json(er);
+    res.status(500).json(error);
   }
 };
 

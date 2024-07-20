@@ -7,13 +7,18 @@ const transporter = require("../utils/transporter");
 const GenerateQRCode = require("../utils/generateQRCode");
 const calculateExpirationDate = require("../utils/calculateExpDate");
 
-const getUserByEmailQuery = require("../queries/getUserByEmail");
 const getUserByIdQuery = require("../queries/getUserById");
 
 const signup = async (req, res) => {
-  const { newUser } = req.body;
+  const { newUser, file } = req.body;
 
   try {
+    if (!file) {
+      return res.status(403).json({
+        message: "Please include your valid ID!",
+      });
+    }
+
     // Check if user already exists
     const [userExists] = await connection
       .promise()
@@ -23,7 +28,23 @@ const signup = async (req, res) => {
       return res.status(403).json({ message: "Email already registered!" });
     }
 
-    // Hash the password
+    // Check if user already exists
+    const [users] = await connection.promise().query(
+      `SELECT * FROM user WHERE
+              (firstName = ? AND lastName = ?) OR
+              (firstName = ? AND lastName = ? AND middleName = ?)
+              `,
+      [newUser.firstName, newUser.lastName, newUser.firstName, newUser.lastName, newUser.middleName]
+    );
+
+    if (users.length > 0) {
+      return res.status(403).json({
+        message: `${newUser.firstName}, ${newUser.middleName} ${newUser.lastName} is already registered!`,
+      });
+    }
+
+    // * PROCEED WITH REGISTRATION AFTER VERIFICATION
+
     const hashPass = await bcrypt.hash(newUser.password, 12);
     const newID = uuid();
 
@@ -188,7 +209,7 @@ const signup = async (req, res) => {
     );
 
     // Generate QR code and upload to Cloudinary
-    const qrCodeLink = `https://yourdomain.com/user/${newID}`;
+    const qrCodeLink = `https://pwd-kainakap.vercel.app/user/${newID}`;
     const qrCodeImage = await GenerateQRCode(qrCodeLink);
     const resultUpload = await cloudinary.uploader.upload(qrCodeImage, {
       folder: "kainakap/qrcode",
@@ -562,8 +583,25 @@ const logout = async (req, res) => {
 
 const getUsersColumn = async (req, res) => {
   try {
-    const [userExists] = await connection.promise().query("DESCRIBE otp");
-    res.status(200).json(userExists);
+    const user_table = [];
+    const emergency_person_table = [];
+    const admin_table = [];
+    const user_files_table = [];
+
+    const [user_schema] = await connection.promise().query("DESCRIBE user");
+    user_schema.map((item) => user_table.push(`${item.Field}, ${item.Type}`));
+
+    const [emergency_person_schema] = await connection.promise().query("DESCRIBE emergency_person");
+    emergency_person_schema.map((item) =>
+      emergency_person_table.push(`${item.Field}, ${item.Type}`)
+    );
+
+    const [admin_schema] = await connection.promise().query("DESCRIBE admin");
+    admin_schema.map((item) => admin_table.push(`${item.Field}, ${item.Type}`));
+
+    const [user_files_schema] = await connection.promise().query("DESCRIBE user_files");
+    user_files_schema.map((item) => user_files_table.push(`${item.Field}, ${item.Type}`));
+    res.status(200).json({ user_table, emergency_person_table, admin_table, user_files_table });
   } catch (error) {
     console.log(error);
     res.status(500).json(error);

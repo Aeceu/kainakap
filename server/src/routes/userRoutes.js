@@ -10,6 +10,7 @@ const {
   getUserByID,
   deleteUserByID,
 } = require("../controllers/userController");
+const { extractDataFromID } = require("../controllers/filesController");
 
 const router = express.Router();
 
@@ -25,5 +26,7 @@ router.post("/user/signup", signup);
 
 router.get("/user/:userId", getUserByID);
 router.delete("/user/:userId", deleteUserByID);
+
+router.post("/id/extract", extractDataFromID);
 
 module.exports = router;
