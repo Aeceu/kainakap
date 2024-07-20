@@ -13,8 +13,7 @@ import { UserContext } from "../context/UserContext";
 
 const UserSignup = () => {
   const { newUser } = useContext(UserContext);
-  const [currentStep, setCurrentStep] = useState(0);
-  const [isValidID, setIsValidID] = useState(false);
+  const [currentStep, setCurrentStep] = useState(6);
 
   return (
     <div className="w-full h-screen overflow-hidden  flex flex-col items-center bg-orange-50">
@@ -115,9 +114,7 @@ const UserSignup = () => {
         {currentStep === 3 && <Education setCurrentStep={setCurrentStep} />}
         {currentStep === 4 && <Employment setCurrentStep={setCurrentStep} />}
         {currentStep === 5 && <Medical setCurrentStep={setCurrentStep} />}
-        {currentStep === 6 && (
-          <Verification setCurrentStep={setCurrentStep} setIsValidID={setIsValidID} />
-        )}
+        {currentStep === 6 && <Verification setCurrentStep={setCurrentStep} />}
         {currentStep === 7 && <DoneRegister setCurrentStep={setCurrentStep} />}
       </div>
     </div>

@@ -18,11 +18,10 @@ const DoneRegister = ({ setCurrentStep }) => {
           idData,
         });
         console.log(res.data);
+        setRegistrationStatus("completed");
       } catch (error) {
         setRegistrationStatus("failed");
         console.log(error);
-      } finally {
-        setRegistrationStatus("completed");
       }
     };
     handleRegister();

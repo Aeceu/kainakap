@@ -1,5 +1,6 @@
 const getUserByIdQuery = `
     SELECT 
+      u.refreshToken AS refreshToken,
       u.id AS userID,
       u.firstName AS userFirstName,
       u.middleName AS userMiddleName,

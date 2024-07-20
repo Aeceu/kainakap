@@ -1,16 +1,16 @@
 import { Html5QrcodeScanner } from "html5-qrcode";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Bounce from "../components/animation/bounce";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "../redux/store";
-import { loginViaQR } from "../redux/actions/userAction";
 import { Loader2 } from "lucide-react";
+import axios from "../api/axios";
+import { UserContext } from "../context/UserContext";
+import toast from "react-hot-toast";
 
-const ScanQR: React.FC = () => {
-  const { loading } = useSelector((state: RootState) => state.user);
-  const dispatch = useDispatch<AppDispatch>();
-  const [scanResult, setScanResult] = useState<string | null>(null);
+const ScanQR = () => {
+  const { setUser, setToken } = useContext(UserContext);
+  const [loading, setLoading] = useState(false);
+  const [scanResult, setScanResult] = useState(null);
 
   useEffect(() => {
     const scanner = new Html5QrcodeScanner(
@@ -26,12 +26,12 @@ const ScanQR: React.FC = () => {
       false
     );
 
-    const success = (decodedText: string) => {
+    const success = (decodedText) => {
       setScanResult(decodedText);
       scanner.clear();
     };
 
-    const error = (err: unknown) => {
+    const error = (err) => {
       console.warn(err);
     };
 
@@ -45,7 +45,26 @@ const ScanQR: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (scanResult) dispatch(loginViaQR(scanResult.split("/user/")[1]));
+    if (scanResult) {
+      const fetchUser = async () => {
+        try {
+          setLoading(true);
+          const res = await axios.get(`/user/login/qrcode/${scanResult.split("/user/")[1]}`, {
+            withCredentials: true,
+          });
+          console.log(res.data);
+          setUser(res.data.user);
+          setToken(res.data.accessToken);
+          toast.success(res.data.message);
+          navigate("/");
+        } catch (error) {
+          console.log(error);
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchUser();
+    }
   }, [scanResult]);
 
   return (

@@ -27,6 +27,7 @@ const UserLogin = () => {
       const res = await axios.post("/user/login", data, {
         withCredentials: true,
       });
+      console.log(res.data);
       setUserId(res.data.id);
       toast.success(res.data.message);
       navigate("/auth/user/verify");

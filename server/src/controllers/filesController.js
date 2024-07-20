@@ -80,7 +80,6 @@ const extractDataFromID = async (req, res) => {
         message: "Failed to identify the image!",
       });
     }
-
     const [users] = await connection.promise().query(
       `SELECT * FROM user WHERE 
        (firstName = ? AND lastName = ?) OR 
@@ -96,7 +95,9 @@ const extractDataFromID = async (req, res) => {
 
     if (users.length > 0) {
       return res.status(403).json({
-        message: `${resultData.firstName}, ${resultData.middleName} ${resultData.lastName} is already registered!`,
+        message: `${resultData.firstName}, ${resultData.middleName ? resultData.middleName : ""} ${
+          resultData.lastName
+        } is already registered!`,
       });
     }
 

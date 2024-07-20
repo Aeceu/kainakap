@@ -7,6 +7,9 @@ import UserSignup from "./pages/UserSignup";
 
 import UserAuthLayout from "./utils/UserAuthLayout";
 import UserLogin from "./pages/UserLogin";
+import UserVerify from "./pages/UserVerify";
+import ScanQR from "./pages/ScanQR";
+
 const App = () => {
   return (
     <Routes>
@@ -28,8 +31,8 @@ const App = () => {
 
         <Route path="user" element={<UserAuthLayout />}>
           <Route path="login" element={<UserLogin />} />
-          {/* <Route path="login/qrcode" element={<ScanQR />} />
-          <Route path="verify" element={<UserVerify />} /> */}
+          <Route path="login/qrcode" element={<ScanQR />} />
+          <Route path="verify" element={<UserVerify />} />
         </Route>
         <Route path="user/signup" element={<UserSignup />} />
       </Route>

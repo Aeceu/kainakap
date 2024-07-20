@@ -9,12 +9,14 @@ const {
   handleRefreshToken,
   getUserByID,
   deleteUserByID,
+  getUserByQR,
 } = require("../controllers/userController");
 const { extractDataFromID } = require("../controllers/filesController");
 
 const router = express.Router();
 
 router.post("/user/login", login);
+router.get("/user/login/qrcode/:userId", getUserByQR);
 router.post("/user/verify", verifyOTP);
 router.post("/user/signup", signup);
 router.get("/user/logout", logout);

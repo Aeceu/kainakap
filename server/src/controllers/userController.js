@@ -391,8 +391,6 @@ const verifyOTP = async (req, res) => {
   try {
     const { userId, otp } = req.body;
 
-    if (!otp || !userId) return res.status(400).json("Please input the otp code!");
-
     // Fetch OTP record
     const [otpRecords] = await connection
       .promise()
@@ -424,6 +422,7 @@ const verifyOTP = async (req, res) => {
     const [users] = await connection.promise().query(getUserByIdQuery, [userId]);
     if (users.length === 0) return res.status(403).json("User does not exist!");
     const user = users[0];
+
     const result = {
       id: user.userID,
       firstName: user.userFirstName,
@@ -521,9 +520,9 @@ const verifyOTP = async (req, res) => {
 
     // Generate tokens
     const user_data = {
-      id: user.id,
-      email: user.email,
-      role: user.role,
+      id: user.userID,
+      email: user.userEmail,
+      role: user.userRole,
     };
 
     const accessToken = jwt.sign(user_data, process.env.TOKEN_SECRET, {
@@ -534,9 +533,9 @@ const verifyOTP = async (req, res) => {
     });
 
     // Update user with refresh token
-    connection
+    const [rt_result] = await connection
       .promise()
-      .query("UPDATE `user` SET `refreshToken` = ? WHERE `id` = ?", [userRefreshToken, user.id]);
+      .query("UPDATE `user` SET `refreshToken` = ? WHERE `id` = ?", [userRefreshToken, userId]);
 
     // Send the refresh token as a cookie
     res.cookie("jwt", userRefreshToken, {
@@ -546,16 +545,11 @@ const verifyOTP = async (req, res) => {
       maxAge: 24 * 60 * 60 * 1000,
     });
 
-    // Exclude sensitive data from user
-    const userWithoutPass = { ...result };
-    delete userWithoutPass.password;
-    delete userWithoutPass.refreshToken;
-
     // Send response
     res.status(200).json({
-      message: `${user.role} AUTHENTICATED!`,
+      message: `${result.role} AUTHENTICATED!`,
       accessToken,
-      user: userWithoutPass,
+      user: result,
     });
   } catch (error) {
     console.log(error);
@@ -569,7 +563,6 @@ const verifyOTP = async (req, res) => {
 const handleRefreshToken = async (req, res) => {
   const cookies = req.cookies;
   if (!cookies?.jwt) return res.sendStatus(401);
-
   const refreshToken = cookies.jwt;
   const [foundUser] = await connection
     .promise()
@@ -861,6 +854,7 @@ const getUserByID = async (req, res) => {
     const user = rows[0];
 
     const result = {
+      refreshToken: user.refreshToken,
       id: user.userID,
       firstName: user.userFirstName,
       middleName: user.userMiddleName,
@@ -1021,7 +1015,149 @@ const deleteUserByID = async (req, res) => {
   }
 };
 
+const getUserByQR = async (req, res) => {
+  try {
+    const userId = req.params.userId;
+
+    const [rows] = await connection.promise().query(getUserByIdQuery, [userId]);
+
+    const user = rows[0];
+    const result = {
+      id: user.userID,
+      firstName: user.userFirstName,
+      middleName: user.userMiddleName,
+      lastName: user.userLastName,
+      suffix: user.userSuffix,
+      age: user.userAge,
+      birthdate: user.userBirthdate,
+      birthplace: user.userBirthplace,
+      gender: user.userGender,
+      religion: user.userReligion,
+      citizenship: user.userCitizenship,
+      civil: user.userCivil,
+      email: user.userEmail,
+      phone: user.userPhone,
+      landline: user.userLandline,
+      houseno: user.userHouseno,
+      street: user.userStreet,
+      baranggay: user.userBaranggay,
+      city: user.userCity,
+      province: user.userProvince,
+      region: user.userRegion,
+      zipcode: user.userZipcode,
+      elementary: user.userElementary,
+      attain: user.userAttain,
+      highschool: user.userHighschool,
+      attain1: user.userAttain1,
+      senior: user.userSenior,
+      attain2: user.userAttain2,
+      college: user.userCollege,
+      attain3: user.userAttain3,
+      employment: user.userEmployment,
+      occupation: user.userOccupation,
+      yearEmploy: user.userYearEmploy,
+      skill1: user.userSkill1,
+      skill2: user.userSkill2,
+      yearUnemploy: user.userYearUnemploy,
+      skill1_1: user.userSkill1_1,
+      skill2_1: user.userSkill2_1,
+      blood: user.userBlood,
+      height: user.userHeight,
+      weight: user.userWeight,
+      disability: user.userDisability,
+      visibility: user.userVisibility,
+      made_disabled: user.userMadeDisabled,
+      status: user.userStatus,
+      device: user.userDevice,
+      specificDevice: user.userSpecificDevice,
+      medicine: user.userMedicine,
+      specificMedicine: user.userSpecificMedicine,
+      others: user.userOthers,
+      role: user.userRole,
+      qr_code: user.userQRCode,
+      emergencyPerson: {
+        firstName: user.emergencyPersonFirstName,
+        middleName: user.emergencyPersonMiddleName,
+        lastName: user.emergencyPersonLastName,
+        suffix: user.emergencyPersonSuffix,
+        age: user.emergencyPersonAge,
+        gender: user.emergencyPersonGender,
+        relationship: user.emergencyPersonRelationship,
+        religion: user.emergencyPersonReligion,
+        email: user.emergencyPersonEmail,
+        phone: user.emergencyPersonPhone,
+        landline: user.emergencyPersonLandline,
+        houseno: user.emergencyPersonHouseno,
+        street: user.emergencyPersonStreet,
+        baranggay: user.emergencyPersonBaranggay,
+        city: user.emergencyPersonCity,
+        province: user.emergencyPersonProvince,
+        region: user.emergencyPersonRegion,
+        zipcode: user.emergencyPersonZipcode,
+      },
+      userFiles: {
+        profilePhotoId: user.profilePhotoId,
+        profilePhotoUrl: user.profilePhotoUrl,
+        resumeId: user.resumeId,
+        resumeUrl: user.resumeUrl,
+        pwdIdId: user.pwdIdId,
+        pwdIdUrl: user.pwdIdUrl,
+        brgyResidenceCertificateId: user.brgyResidenceCertificateId,
+        brgyResidenceCertificateUrl: user.brgyResidenceCertificateUrl,
+        medicalCertificateId: user.medicalCertificateId,
+        medicalCertificateUrl: user.medicalCertificateUrl,
+        proofOfDisabilityId: user.proofOfDisabilityId,
+        proofOfDisabilityUrl: user.proofOfDisabilityUrl,
+        validIdId: user.validIdId,
+        validIdNo: user.validIdNo,
+        validIdUrl: user.validIdUrl,
+      },
+    };
+    if (!user) {
+      return res.status(403).json("User not found!");
+    }
+    const user_data = {
+      id: user.userID,
+      email: user.userEmail,
+      role: user.userRole,
+    };
+
+    const accessToken = jwt.sign(user_data, process.env.TOKEN_SECRET, {
+      expiresIn: "10s",
+    });
+    const userRefreshToken = jwt.sign(user_data, process.env.TOKEN_SECRET, {
+      expiresIn: "1d",
+    });
+
+    // Update user with refresh token
+    const [rt_result] = await connection
+      .promise()
+      .query("UPDATE `user` SET `refreshToken` = ? WHERE `id` = ?", [userRefreshToken, userId]);
+
+    console.log("Query Result:", rt_result);
+
+    // Send the refresh token as a cookie
+    res.cookie("jwt", userRefreshToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+      maxAge: 24 * 60 * 60 * 1000,
+    });
+
+    // Send response
+    res.status(200).json({
+      message: `${result.role} AUTHENTICATED!`,
+      accessToken,
+      user: result,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json(error);
+  }
+};
+
 module.exports = {
+  getUserByQR,
   signup,
   getUsers,
   getUsersColumn,

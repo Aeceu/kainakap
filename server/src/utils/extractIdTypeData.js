@@ -23,8 +23,8 @@ const extractPhilHealthData = (text) => {
   if (idMatch && nameMatch) {
     return {
       idNumber: idMatch[0],
-      firstName: nameMatch[0].split(",")[0].trim().toLowerCase(),
-      lastName: nameMatch[0].split(",")[1].trim().toLowerCase(),
+      firstName: nameMatch[0].split(",")[1].trim().toLowerCase(),
+      lastName: nameMatch[0].split(",")[0].trim().toLowerCase(),
     };
   }
   return null;

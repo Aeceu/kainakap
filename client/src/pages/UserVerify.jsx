@@ -1,32 +1,31 @@
-import { FormEvent, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "../redux/store";
-import axios from "../redux/api";
-import { setToken, setUser } from "../redux/slices/userSlice";
+import { useContext, useState } from "react";
 import toast from "react-hot-toast";
 import { Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { UserContext } from "../context/UserContext";
+import axios from "../api/axios";
 
 const UserVerify = () => {
+  const { setUser, setToken, userId } = useContext(UserContext);
   const [loading, setLoading] = useState(false);
   const [otp, setOTP] = useState("");
-  const state = useSelector((state: RootState) => state.user);
-  const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
 
-  const handleVerify = async (e: FormEvent) => {
+  const handleVerify = async (e) => {
+    console.log({ userId, otp });
     e.preventDefault();
     try {
       setLoading(true);
       const res = await axios.post(
         "/user/verify",
-        { userId: state.userId, otp },
+        { userId, otp },
         {
           withCredentials: true,
         }
       );
-      dispatch(setUser(res.data.user));
-      dispatch(setToken(res.data.accessToken));
+      console.log(res.data);
+      setUser(res.data.user);
+      setToken(res.data.accessToken);
       toast.success(res.data.message);
       navigate("/");
     } catch (error) {

@@ -1,7 +1,7 @@
-// import { useUserLogout } from "../hooks/user/useLogout";
+import { useUserLogout } from "../hooks/user/useLogout";
 
 const Navbar = () => {
-  // const logout = useUserLogout();
+  const logout = useUserLogout();
   return (
     <div className="navbar bg-base-100 h-[100px] px-16 ">
       <div className="flex-1">
@@ -21,7 +21,9 @@ const Navbar = () => {
             </div>
           </div>
         </div>
-        <button className="btn btn-accent text-white shadow-md ">Log out</button>
+        <button onClick={logout} className="btn btn-accent text-white shadow-md ">
+          Log out
+        </button>
       </div>
     </div>
   );

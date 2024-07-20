@@ -5,14 +5,17 @@ import axios from "../../api/axios";
 import { UserContext } from "../../context/UserContext";
 import toast from "react-hot-toast";
 
-const Verification = ({ setCurrentStep, setIsValidID }) => {
+const Verification = ({ setCurrentStep }) => {
   const { files, setFiles, setidData } = useContext(UserContext);
+  const [isValidID, setIsValidID] = useState(false);
   const [id, setID] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [failed, setFailed] = useState(false);
   const [validationMessage, setValidationMessage] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (id) {
+    if (id && isValidID) {
       setCurrentStep((prev) => prev + 1);
     } else {
       toast.error("Please upload and validate your ID before proceeding.");
@@ -25,23 +28,32 @@ const Verification = ({ setCurrentStep, setIsValidID }) => {
       try {
         setFiles((prevFiles) => ({ ...prevFiles, [fileType]: res }));
         if (fileType === "valid_id") {
+          setFailed(false);
+          setLoading(true);
           setValidationMessage("");
           setID(res);
           const idResult = await axios.post("/id/extract", {
             file: res,
           });
           if (idResult.status === 200) {
-            console.log(idResult.data);
+            setLoading(false);
             setIsValidID(true);
             setidData(idResult.data.resultData);
             setValidationMessage(idResult.data.message);
           } else {
+            setFailed(true);
+            setID(null);
             setIsValidID(false);
+            setLoading(false);
             setValidationMessage("Failed to verify ID. Please try again.");
           }
         }
       } catch (error) {
         console.log(error);
+        setValidationMessage(error.response.data.message);
+        setFailed(true);
+      } finally {
+        setLoading(false);
       }
     });
   };
@@ -67,8 +79,13 @@ const Verification = ({ setCurrentStep, setIsValidID }) => {
         </div>
 
         <div className="flex flex-col items-center justify-center">
-          <h1 className="font-extrabold text-4xl mb-2">Upload your valid ID</h1>
-          <div className="w-[500px] h-[250px] overflow-hidden flex items-center justify-center border rounded-xl shadow-md">
+          <h1 className={`font-extrabold text-4xl mb-2 ${loading && "text-red-500 animate-pulse"}`}>
+            {loading ? "Validating...." : "Upload your valid ID"}
+          </h1>
+          <div
+            className={`${
+              failed && "animate-shake border-red-500"
+            } w-[500px] h-[250px] overflow-hidden flex items-center justify-center border rounded-xl shadow-md`}>
             <img
               src={id ? id : "/id.svg"}
               alt="id"
@@ -81,6 +98,7 @@ const Verification = ({ setCurrentStep, setIsValidID }) => {
             type="file"
             className="mt-2 file-input file-input-md file-input-bordered file-input-primary w-3/4"
           />
+
           {validationMessage && (
             <p className="text-xs text-red-500 font-bold my-2">{validationMessage}</p>
           )}
