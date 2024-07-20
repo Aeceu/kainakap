@@ -30,6 +30,15 @@ app.use(
 // API ROUTES
 app.use("/api/v1", userRoute);
 app.use("/api/v1", fileRoute);
+app.get("/", async (req, res) => {
+  try {
+    const [result] = await connection.promise().query("SHOW TABLES");
+    res.status(200).json(result);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json(error);
+  }
+});
 
 // DATABASE AND SERVER CONNECTIONS
 connection.connect((err) => {
@@ -37,6 +46,7 @@ connection.connect((err) => {
     console.error("Error connecting to the database:", err.stack);
     return;
   }
+
   console.log("Connected to the database.");
 });
 

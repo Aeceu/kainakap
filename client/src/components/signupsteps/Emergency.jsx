@@ -1,4 +1,4 @@
-import { BellRing, ChevronRight } from "lucide-react";
+import { BellRing, ChevronLeft, ChevronRight } from "lucide-react";
 import { stepThreeSchema } from "../../schema/userSignupSchema";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -488,7 +488,12 @@ const Emergency = ({ setCurrentStep }) => {
         )}
       </label>
 
-      <span className="mt-8 col-span-4 flex items-center justify-end w-full">
+      <span className="mt-8 col-span-4 flex items-center justify-end gap-4 w-full">
+        <button
+          onClick={() => setCurrentStep((prev) => prev - 1)}
+          className="btn gap-1 bg-rose-400 w-max text-white">
+          <ChevronLeft className="w-4 h-4" /> Previous
+        </button>
         <button type="submit" className="btn gap-2 bg-yellow-100 w-max ">
           Next <ChevronRight className="w-4 h-4" />
         </button>

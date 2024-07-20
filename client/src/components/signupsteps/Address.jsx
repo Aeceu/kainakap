@@ -1,4 +1,4 @@
-import { ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Controller, useForm } from "react-hook-form";
 import { stepTwoSchema } from "../../schema/userSignupSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -263,8 +263,13 @@ const Address = ({ setCurrentStep }) => {
         )}
       </label>
 
-      <span className="mt-8 col-span-4 flex items-center justify-end w-full">
-        <button type="submit" className="btn gap-2 bg-yellow-100 w-max">
+      <span className="mt-8 col-span-4 flex items-center justify-end gap-4 w-full">
+        <button
+          onClick={() => setCurrentStep((prev) => prev - 1)}
+          className="btn gap-1 bg-rose-400 w-max text-white">
+          <ChevronLeft className="w-4 h-4" /> Previous
+        </button>
+        <button type="submit" className="btn gap-2 bg-yellow-100 w-max ">
           Next <ChevronRight className="w-4 h-4" />
         </button>
       </span>

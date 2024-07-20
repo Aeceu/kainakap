@@ -1,4 +1,4 @@
-import { Bell, ChevronRight } from "lucide-react";
+import { Bell, ChevronLeft, ChevronRight } from "lucide-react";
 import { useContext, useState } from "react";
 import { handleFile } from "../../utils/HandleFile";
 import axios from "../../api/axios";
@@ -178,7 +178,12 @@ const Verification = ({ setCurrentStep }) => {
         />
       </span>
 
-      <span className=" col-span-2 flex items-center justify-end w-full">
+      <span className="mt-8 col-span-2 flex items-center justify-end gap-4 w-full">
+        <button
+          onClick={() => setCurrentStep((prev) => prev - 1)}
+          className="btn gap-1 bg-rose-400 w-max text-white">
+          <ChevronLeft className="w-4 h-4" /> Previous
+        </button>
         <button type="submit" className="btn gap-2 bg-yellow-100 w-max ">
           Next <ChevronRight className="w-4 h-4" />
         </button>
