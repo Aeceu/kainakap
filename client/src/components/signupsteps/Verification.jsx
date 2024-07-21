@@ -114,6 +114,7 @@ const Verification = ({ setCurrentStep }) => {
             <li>PhilHealth ID</li>
             <li>National ID</li>
             <li>Driver's License</li>
+            <li>TIN ID</li>
           </ul>
         </div>
       </div>
