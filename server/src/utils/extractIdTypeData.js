@@ -2,14 +2,14 @@ const extractDriversLicenseData = (text) => {
   if (!text) return null;
   const idMatch = text.match(/\b[A-Z0-9]\d{2}-\d{2}-\d{6}\b/);
   const nameMatch = text.match(
-    /Last Name[., ]? First Name[., ]? Middle Name[., ]?\n([A-Za-z-]+(?: [A-Za-z-]+)*), ([A-Z][A-Za-z. ]+)/
+    /Last Name[., ]? First Name[., ]? Middle Name[., ]?\n([A-Za-z-]+(?: [A-Za-z-]+)*), ([A-Z][A-Za-z. ]+) ([A-Za-z-]+)/
   );
-
   if (idMatch && nameMatch) {
     return {
       idNumber: idMatch[0],
-      firstName: nameMatch[1].trim().toLowerCase(),
-      lastName: nameMatch[2].trim().toLowerCase(),
+      firstName: nameMatch[2].trim().toLowerCase(),
+      lastName: nameMatch[1].trim().toLowerCase(),
+      middleName: nameMatch[3].trim().toLowerCase(),
     };
   }
   return null;
@@ -48,4 +48,25 @@ const extractNationalIDData = (text) => {
   return null;
 };
 
-module.exports = { extractDriversLicenseData, extractNationalIDData, extractPhilHealthData };
+const extractTinIdData = (text) => {
+  if (!text) return null;
+  const idMatch = text.match(/\b\d{3}-\d{3}-\d{3}-\d{5}\b/);
+  const nameMatch = text.match(/Name:\n([A-Z]+), ([A-Z ]+) ([A-Z]+)/);
+
+  if (idMatch && nameMatch) {
+    return {
+      idNumber: idMatch[0],
+      firstName: nameMatch[2].trim().toLowerCase(),
+      lastName: nameMatch[1].trim().toLowerCase(),
+      middleName: nameMatch[3].trim().toLowerCase(),
+    };
+  }
+  return null;
+};
+
+module.exports = {
+  extractDriversLicenseData,
+  extractNationalIDData,
+  extractPhilHealthData,
+  extractTinIdData,
+};

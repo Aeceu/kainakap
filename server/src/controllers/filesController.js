@@ -6,6 +6,7 @@ const {
   extractDriversLicenseData,
   extractNationalIDData,
   extractPhilHealthData,
+  extractTinIdData,
 } = require("../utils/extractIdTypeData");
 
 const extractDataFromID = async (req, res) => {
@@ -28,7 +29,6 @@ const extractDataFromID = async (req, res) => {
 
     const extractedText = detections[0].description;
     const idType = identifyIDType(extractedText);
-
     let resultData = null;
     if (idType === "PhilHealth ID") {
       const philHealthData = extractPhilHealthData(extractedText);
@@ -70,6 +70,20 @@ const extractDataFromID = async (req, res) => {
           idType,
           idNumber: driversLicenseData.idNumber,
           firstName: driversLicenseData.firstName,
+          middleName: driversLicenseData.middleName,
+          lastName: driversLicenseData.lastName,
+        };
+      }
+    }
+
+    if (idType === "TIN ID") {
+      const driversLicenseData = extractTinIdData(extractedText);
+      if (driversLicenseData) {
+        resultData = {
+          idType,
+          idNumber: driversLicenseData.idNumber,
+          firstName: driversLicenseData.firstName,
+          middleName: driversLicenseData.middleName,
           lastName: driversLicenseData.lastName,
         };
       }
