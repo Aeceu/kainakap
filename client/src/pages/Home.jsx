@@ -1,6 +1,7 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { UserContext } from "../context/UserContext";
 const Home = () => {
+  const [showQR, setShowQR] = useState(true);
   const { user } = useContext(UserContext);
   return (
     <div className="w-full min-h-screen relative flex flex-col  ">
@@ -25,11 +26,25 @@ const Home = () => {
           </div>
           <div className=" h-full   px-8 py-8 bg-base-200 flex flex-col gap-4">
             <div className="flex items-centr gap-4">
-              <img
-                src={user.qr_code.secure_url}
-                alt="qr_code"
-                className="w-[300px] h-[300px] col-span-2 rounded-md"
-              />
+              <span className="shrink-0 flex flex-col gap-2">
+                <img
+                  src={showQR ? user.qr_code.secure_url : user.userFiles.profilePhotoUrl}
+                  alt="qr_code"
+                  className="w-[300px] h-[300px] col-span-2 rounded-md"
+                />
+                <span className="flex items-center justify-center gap-2">
+                  <button
+                    onClick={() => setShowQR(true)}
+                    className="btn btn-md text-white shadow-md btn-info flex items-center justify-center">
+                    Show QR Code
+                  </button>
+                  <button
+                    onClick={() => setShowQR(false)}
+                    className="btn btn-md text-white shadow-md btn-success flex items-center justify-center">
+                    Show Profile Photo
+                  </button>
+                </span>
+              </span>
               <div className="w-full">
                 <ul className="grid grid-cols-4 gap-4  w-full">
                   <h1 className="w-full border-b col-span-4 font-bold text-2xl">
@@ -73,7 +88,7 @@ const Home = () => {
             </div>
             <div className="w-full">
               <ul className="grid grid-cols-4 gap-4  w-full">
-                <h1 className="w-full border-b col-span-4 font-bold text-2xl">
+                <h1 className="w-full border-b col-span-4 font-extrabold tracking-widest text-2xl mt-2">
                   Contact Information
                 </h1>
                 <li className="px-4 py-2 h-max col-span-2 w-full bg-white rounded-md shadow-md">
@@ -86,7 +101,7 @@ const Home = () => {
             </div>
             <div className="w-full">
               <ul className="grid grid-cols-4 gap-4  w-full">
-                <h1 className="w-full border-b col-span-4 font-bold text-2xl">
+                <h1 className="w-full border-b col-span-4 font-extrabold tracking-widest text-2xl mt-2">
                   Address Information
                 </h1>
                 <li className="px-4 py-2 h-max col-span-1 w-full bg-white rounded-md shadow-md">
@@ -98,14 +113,18 @@ const Home = () => {
                 <li className="px-4 py-2 h-max col-span-1 w-full bg-white rounded-md shadow-md">
                   Baranggay: {user.baranggay}
                 </li>
+                {user.city && (
+                  <li className="px-4 py-2 h-max col-span-1 w-full bg-white rounded-md shadow-md">
+                    City: {user.city}
+                  </li>
+                )}
+                {user.province && (
+                  <li className="px-4 py-2 h-max col-span-1 w-full bg-white rounded-md shadow-md">
+                    Province: {user.province}
+                  </li>
+                )}
                 <li className="px-4 py-2 h-max col-span-1 w-full bg-white rounded-md shadow-md">
-                  District: {user.district}
-                </li>
-                <li className="px-4 py-2 h-max col-span-1 w-full bg-white rounded-md shadow-md">
-                  City: {user.city}
-                </li>
-                <li className="px-4 py-2 h-max col-span-1 w-full bg-white rounded-md shadow-md">
-                  Province: {user.province}
+                  Region: {user.region}
                 </li>
                 <li className="px-4 py-2 h-max col-span-1 w-full bg-white rounded-md shadow-md">
                   Zip code: {user.zipcode}
@@ -114,7 +133,7 @@ const Home = () => {
             </div>
             <div className="w-full">
               <ul className="grid grid-cols-4 gap-4  w-full">
-                <h1 className="w-full border-b col-span-4 font-bold text-2xl">
+                <h1 className="w-full border-b col-span-4 font-extrabold tracking-widest text-2xl mt-2">
                   Education Information
                 </h1>
                 <li className="px-4 py-2 h-max col-span-2 w-full bg-white rounded-md shadow-md">
@@ -149,7 +168,7 @@ const Home = () => {
             </div>
             <div className="w-full">
               <ul className="grid grid-cols-4 gap-4  w-full">
-                <h1 className="w-full border-b col-span-4 font-bold text-2xl">
+                <h1 className="w-full border-b col-span-4 font-extrabold tracking-widest text-2xl mt-2">
                   Employment Information
                 </h1>
                 <li className="px-4 py-2 h-max col-span-1 w-full bg-white rounded-md shadow-md">
@@ -180,7 +199,7 @@ const Home = () => {
             </div>
             <div className="w-full">
               <ul className="grid grid-cols-4 gap-4  w-full">
-                <h1 className="w-full border-b col-span-4 font-bold text-2xl">
+                <h1 className="w-full border-b col-span-4 font-extrabold tracking-widest text-2xl mt-2">
                   Medical Information
                 </h1>
                 <li className="px-4 py-2 h-max col-span-1 w-full bg-white rounded-md shadow-md">
@@ -221,9 +240,10 @@ const Home = () => {
                 </li>
               </ul>
             </div>
+
             <div className="w-full">
               <ul className="grid grid-cols-4 gap-4  w-full">
-                <h1 className="w-full border-b col-span-4 font-bold text-2xl">
+                <h1 className="w-full border-b col-span-4 font-extrabold tracking-widest text-2xl mt-2">
                   Person to contact incase of emergency
                 </h1>
                 <li className="px-4 py-2 h-max col-span-1 w-full bg-white rounded-md shadow-md">
@@ -250,7 +270,7 @@ const Home = () => {
                 <li className="px-4 py-2 h-max col-span-1 w-full bg-white rounded-md shadow-md">
                   Religion: {user.emergencyPerson?.religion}
                 </li>
-                <h1 className="w-full border-b col-span-4 font-bold text-2xl">
+                <h1 className="w-full border-b col-span-4 font-extrabold tracking-widest text-2xl mt-2">
                   Emergency Contact Information
                 </h1>
                 <li className="px-4 py-2 h-max col-span-2 w-full bg-white rounded-md shadow-md">
@@ -262,7 +282,7 @@ const Home = () => {
                 <li className="px-4 py-2 h-max col-span-1 w-full bg-white rounded-md shadow-md">
                   Landline: {user.emergencyPerson?.landline}
                 </li>
-                <h1 className="w-full border-b col-span-4 font-bold text-2xl">
+                <h1 className="w-full border-b col-span-4 font-extrabold tracking-widest text-2xl mt-2">
                   Home/Permanent Address
                 </h1>
                 <li className="px-4 py-2 h-max col-span-1 w-full bg-white rounded-md shadow-md">
@@ -286,6 +306,62 @@ const Home = () => {
                 <li className="px-4 py-2 h-max col-span-1 w-full bg-white rounded-md shadow-md">
                   Zip code: {user.emergencyPerson?.zipcode}
                 </li>
+              </ul>
+            </div>
+
+            <div className="w-full">
+              <ul className="grid grid-cols-4 gap-4 w-full">
+                <h1 className="w-full border-b col-span-4 font-extrabold tracking-widest text-2xl mt-2">
+                  User Documents
+                </h1>
+                <span>
+                  <h1 className="font-extrabold text-lg">Valid ID</h1>
+                  <img
+                    src={user.userFiles.validIdUrl}
+                    alt={user.userFiles.validIdUrl}
+                    className="rounded-md  w-[300px] h-[150px] object-cover shadow-md"
+                  />
+                </span>
+                <span>
+                  <h1 className="font-extrabold text-lg">PWD ID</h1>
+                  <img
+                    src={user.userFiles.pwdIdUrl}
+                    alt={user.userFiles.pwdIdUrl}
+                    className="rounded-md  w-[300px] h-[150px] object-cover shadow-md"
+                  />
+                </span>
+                <span>
+                  <h1 className="font-extrabold text-lg">Brgy. Residence Certificate</h1>
+                  <img
+                    src={user.userFiles.brgyResidenceCertificateUrl}
+                    alt={user.userFiles.brgyResidenceCertificateUrl}
+                    className="rounded-md  w-[300px] h-[150px] object-cover shadow-md"
+                  />
+                </span>
+                <span>
+                  <h1 className="font-extrabold text-lg">Resume</h1>
+                  <img
+                    src={user.userFiles.resumeUrl}
+                    alt={user.userFiles.resumeUrl}
+                    className="rounded-md  w-[300px] h-[150px] object-cover shadow-md"
+                  />
+                </span>
+                <span>
+                  <h1 className="font-extrabold text-lg">Medical Certificate</h1>
+                  <img
+                    src={user.userFiles.medicalCertificateUrl}
+                    alt={user.userFiles.medicalCertificateUrl}
+                    className="rounded-md  w-[300px] h-[150px] object-cover shadow-md"
+                  />
+                </span>
+                <span>
+                  <h1 className="font-extrabold text-lg">Proof of disability</h1>
+                  <img
+                    src={user.userFiles.proofOfDisabilityUrl}
+                    alt={user.userFiles.proofOfDisabilityUrl}
+                    className="rounded-md  w-[300px] h-[150px] object-cover shadow-md"
+                  />
+                </span>
               </ul>
             </div>
           </div>

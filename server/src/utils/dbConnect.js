@@ -9,6 +9,7 @@ const connection = mysql.createConnection({
   password: process.env.DATABASE_PASS,
   port: process.env.DATABASE_PORT,
   database: "kainakap",
+  connectTimeout: 10000,
 });
 
 module.exports = connection;
