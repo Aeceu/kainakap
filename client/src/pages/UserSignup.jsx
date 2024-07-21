@@ -13,7 +13,7 @@ import { UserContext } from "../context/UserContext";
 
 const UserSignup = () => {
   const { newUser } = useContext(UserContext);
-  const [currentStep, setCurrentStep] = useState(0);
+  const [currentStep, setCurrentStep] = useState(6);
 
   return (
     <div className="w-full h-screen overflow-hidden  flex flex-col items-center bg-orange-50">

@@ -30,6 +30,7 @@ const extractDataFromID = async (req, res) => {
     const extractedText = detections[0].description;
     const idType = identifyIDType(extractedText);
     let resultData = null;
+
     if (idType === "PhilHealth ID") {
       const philHealthData = extractPhilHealthData(extractedText);
       if (philHealthData) {
@@ -73,19 +74,27 @@ const extractDataFromID = async (req, res) => {
           middleName: driversLicenseData.middleName,
           lastName: driversLicenseData.lastName,
         };
+      } else {
+        return res.status(403).json({
+          message: "Failed to extract Driver's License data from the image.",
+        });
       }
     }
 
     if (idType === "TIN ID") {
-      const driversLicenseData = extractTinIdData(extractedText);
-      if (driversLicenseData) {
+      const tinIdData = extractTinIdData(extractedText);
+      if (tinIdData) {
         resultData = {
           idType,
-          idNumber: driversLicenseData.idNumber,
-          firstName: driversLicenseData.firstName,
-          middleName: driversLicenseData.middleName,
-          lastName: driversLicenseData.lastName,
+          idNumber: tinIdData.idNumber,
+          firstName: tinIdData.firstName,
+          middleName: tinIdData.middleName,
+          lastName: tinIdData.lastName,
         };
+      } else {
+        return res.status(403).json({
+          message: "Failed to extract TIN ID data from the image.",
+        });
       }
     }
 
@@ -94,6 +103,7 @@ const extractDataFromID = async (req, res) => {
         message: "Failed to identify the image!",
       });
     }
+
     const [users] = await connection.promise().query(
       `SELECT * FROM user WHERE 
        (firstName = ? AND lastName = ?) OR 
