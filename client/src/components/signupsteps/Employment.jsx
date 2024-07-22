@@ -46,7 +46,15 @@ const Employment = ({ setCurrentStep }) => {
         </div>
         <select className="select select-bordered" {...register("employment")}>
           <option value={""}>Select your employment type</option>
-          <option>Student</option>
+          <option
+            disabled={
+              newUser.attain === "Graduate" &&
+              newUser.attain1 === "Graduate" &&
+              newUser.attain2 === "Graduate" &&
+              newUser.attain3 === "Graduate"
+            }>
+            Student
+          </option>
           <option>Employed</option>
           <option>Unemployed</option>
         </select>{" "}
