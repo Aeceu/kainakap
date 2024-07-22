@@ -4,11 +4,13 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const connection = require("./utils/dbConnect");
+const path = require("path");
 
 // IMPORTED ROUTES
 const userRoute = require("./routes/userRoutes");
 const adminRoute = require("./routes/adminRoutes");
 const fileRoute = require("./routes/fileRoutes");
+const serviceHubRoute = require("./controllers/serviceHubController");
 
 // CONFIGURATIONS
 dotenv.config();
@@ -18,6 +20,7 @@ const app = express();
 const localClientUrl = "http://localhost:5173";
 
 // MIDDLEWARES
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json({ limit: "50mb" }));
 app.use(cookieParser());
 app.use(express.json());
@@ -27,21 +30,14 @@ app.use(
     credentials: true,
   })
 );
+app.use(express.static(path.join(__dirname, "..", "public")));
+app.use("/uploads", express.static(path.join(__dirname, "FileUpload")));
 
 // API ROUTES
 app.use("/api/v1", userRoute);
 app.use("/api/v1", adminRoute);
 app.use("/api/v1", fileRoute);
-
-app.get("/", async (req, res) => {
-  try {
-    const [result] = await connection.promise().query("SHOW TABLES");
-    res.status(200).json(result);
-  } catch (error) {
-    console.log(error);
-    res.status(500).json(error);
-  }
-});
+app.use("/", serviceHubRoute);
 
 // DATABASE AND SERVER CONNECTIONS
 connection.connect((err) => {
