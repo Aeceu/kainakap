@@ -15,7 +15,7 @@ const extractDataFromID = async (req, res) => {
     const image = decodeImage(file);
 
     const client = new vision.ImageAnnotatorClient({
-      keyFilename: "./src/keys/kain-429714-ab25b22a9c05.json",
+      keyFilename: "./src/keys/kain-429714-2b93e85a9614.json",
     });
 
     const [result] = await client.textDetection(image);

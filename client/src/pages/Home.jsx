@@ -31,11 +31,15 @@ const Home = () => {
       </div>
       <div className="z-10 w-full flex items-center justify-center p-8">
         <div className="mockup-browser border bg-white w-3/4  ">
-          <div className="mockup-browser-toolbar">
+          <div className="relative mockup-browser-toolbar">
+            <div className="w-max flex items-center gap-2 absolute top-1 left-24">
+              <div className="badge badge-success badge-md text-white">Status:</div>
+              <p className="text-sm font-extrabold tracking-widest">{user.verificationStatus}</p>
+            </div>
             <div className="input">https://pwd-kainakap.com</div>
           </div>
           <div className=" h-full   px-8 py-8 bg-base-200 flex flex-col gap-4">
-            <div className="flex items-centr gap-4">
+            <div className="flex  gap-4">
               <span className="shrink-0 flex flex-col gap-2">
                 <img
                   src={showQR ? user.qr_code.secure_url : user.userFiles.profilePhotoUrl}
