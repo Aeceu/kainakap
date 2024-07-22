@@ -27,7 +27,7 @@ const UserVerify = () => {
       setUser(res.data.user);
       setToken(res.data.accessToken);
       toast.success(res.data.message);
-      navigate("/");
+      navigate("/user_dashboard");
     } catch (error) {
       console.log(error);
     } finally {

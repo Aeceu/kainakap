@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { Route, Router, Routes } from "react-router-dom";
 import Layout from "./Layout";
 import AuthLayout from "./AuthLayout";
 import Home from "./pages/Home";
@@ -19,12 +19,8 @@ import AdminPersistsLogin from "./components/AdminPersisLogin";
 const App = () => {
   return (
     <Routes>
-      {/* Pasok nyo sa baba ng <Layout/> nato yung routes nyo na need ng info ni user sa page */}
-      {/* Yung persistlogin nayan para everytime na mag refresh ng page, andun parin info ni user */}
-      {/* Pag na sa persistlogin tapos nirefresh, reredirect sa login page */}
       <Route element={<UserPersistsLogin />}>
         <Route path="/" element={<Layout />}>
-          {" "}
           <Route index element={<Home />} />
         </Route>
       </Route>

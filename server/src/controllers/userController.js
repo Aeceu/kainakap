@@ -38,7 +38,6 @@ const signup = async (req, res) => {
 
     // * PROCEED WITH REGISTRATION AFTER VERIFICATION
 
-    const hashPass = await bcrypt.hash(newUser.password, 12);
     const newID = uuid();
 
     // Upload files to Cloudinary and get URLs
@@ -215,7 +214,7 @@ const signup = async (req, res) => {
         newUser.medicine,
         newUser.specificMedicine,
         newUser.others,
-        hashPass,
+        newUser.password,
         "user",
         "not verified",
       ]
@@ -344,15 +343,13 @@ const login = async (req, res) => {
     // Check if user already exists
     const [userExists] = await connection
       .promise()
-      .query("SELECT * FROM `user` WHERE `email` = ?", [data.email]);
+      .query("SELECT * FROM `user` WHERE `email` = ? AND `password` = ? ", [
+        data.email,
+        data.password,
+      ]);
 
     if (userExists.length <= 0) {
       return res.status(403).json("User does not exists!");
-    }
-
-    const validPass = await bcrypt.compare(data.password, userExists[0].password);
-    if (!validPass) {
-      return res.status(400).json("Invalid password!");
     }
 
     const otp = `${Math.floor(1000 + Math.random() * 9000)}`;

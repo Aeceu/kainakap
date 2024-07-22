@@ -1,5 +1,7 @@
 import { useContext, useState } from "react";
 import { UserContext } from "../context/UserContext";
+import { Link } from "react-router-dom";
+
 const Home = () => {
   const [showQR, setShowQR] = useState(true);
   const { user } = useContext(UserContext);
@@ -18,6 +20,14 @@ const Home = () => {
           is a web-based system that aims to empower persons with disabilities (PWDs) by providing
           them with a secure and convenient way to authenticate account.
         </p>
+        <span className="flex items-center justify-center gap-2">
+          <Link to={"/"} className="btn mt-4 btn-success text-white">
+            Go to Service HUB
+          </Link>
+          <Link to={"/"} className="btn mt-4 btn-primary text-white">
+            Apply for membership
+          </Link>
+        </span>
       </div>
       <div className="z-10 w-full flex items-center justify-center p-8">
         <div className="mockup-browser border bg-white w-3/4  ">

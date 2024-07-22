@@ -4,13 +4,11 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const connection = require("./utils/dbConnect");
-const path = require("path");
 
 // IMPORTED ROUTES
 const userRoute = require("./routes/userRoutes");
 const adminRoute = require("./routes/adminRoutes");
 const fileRoute = require("./routes/fileRoutes");
-const serviceHubRoute = require("./controllers/serviceHubController");
 
 // CONFIGURATIONS
 dotenv.config();
@@ -30,14 +28,11 @@ app.use(
     credentials: true,
   })
 );
-app.use(express.static(path.join(__dirname, "..", "public")));
-app.use("/uploads", express.static(path.join(__dirname, "FileUpload")));
 
 // API ROUTES
 app.use("/api/v1", userRoute);
 app.use("/api/v1", adminRoute);
 app.use("/api/v1", fileRoute);
-app.use("/", serviceHubRoute);
 
 // DATABASE AND SERVER CONNECTIONS
 connection.connect((err) => {
