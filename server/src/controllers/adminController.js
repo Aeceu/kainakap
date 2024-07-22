@@ -1,5 +1,4 @@
 const uuid = require("uuid").v4;
-const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const connection = require("../utils/dbConnect");
 
@@ -9,7 +8,7 @@ const login = async (req, res) => {
 
     const [adminExists] = await connection
       .promise()
-      .query("SELECT * FROM admin WHERE email = ?", [email]);
+      .query("SELECT * FROM admin WHERE email = ? AND password = ?", [email, password]);
 
     if (adminExists.length === 0) {
       return res.status(403).json({
@@ -17,13 +16,6 @@ const login = async (req, res) => {
       });
     }
     const admin = adminExists[0];
-    const validPass = await bcrypt.compare(password, admin.password);
-
-    if (!validPass) {
-      return res.status(403).json({
-        message: "Password incorrect!",
-      });
-    }
 
     // Generate tokens
     const admin_data = {
@@ -76,7 +68,6 @@ const signup = async (req, res) => {
       });
     }
 
-    const hashPass = await bcrypt.hash(newAdmin.password, 12);
     const newID = uuid();
     await connection.promise().query(
       `INSERT INTO \`admin\` (
@@ -96,7 +87,7 @@ const signup = async (req, res) => {
         newAdmin.lastName,
         newAdmin.phone,
         newAdmin.email,
-        hashPass,
+        newAdmin.password,
         newAdmin.role,
       ]
     );

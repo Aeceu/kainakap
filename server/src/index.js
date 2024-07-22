@@ -34,7 +34,7 @@ app.use("/api/v1", userRoute);
 app.use("/api/v1", adminRoute);
 app.use("/api/v1", fileRoute);
 
-// DATABASE AND SERVER CONNECTIONS
+// DATABASE AND SERVER
 connection.connect((err) => {
   if (err) {
     console.error("Error connecting to the database:", err.stack);
